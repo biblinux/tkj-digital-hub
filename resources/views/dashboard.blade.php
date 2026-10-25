@@ -1,23 +1,101 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - TKJ Digital Hub</title>
-</head>
-<body>
-    <h1>Dashboard TKJ Digital Hub</h1>
+@extends('layouts.app')
 
-    <p>
-        Selamat datang,
-        {{ auth()->user()->display_name ?: auth()->user()->name }}.
-    </p>
+@section('title', 'Dashboard')
 
-    <p>Peran: {{ auth()->user()->role }}</p>
+@section('content')
+    <h1>Dashboard</h1>
+    <p class="lead">Selamat datang, {{ $user->shownName() }}. <span class="badge">{{ $user->roleLabel() }}</span></p>
 
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">Keluar</button>
-    </form>
-</body>
-</html>
+    {{-- Statistik pengelola --}}
+    @isset($ticketStats)
+        <h2>Ringkasan laporan IT</h2>
+        <div class="grid cols-4">
+            <div class="card stat"><div class="num">{{ $ticketStats['open'] }}</div><div class="label">Terbuka</div></div>
+            <div class="card stat"><div class="num">{{ $ticketStats['unassigned'] }}</div><div class="label">Belum ditugaskan</div></div>
+            <div class="card stat"><div class="num">{{ $ticketStats['in_progress'] }}</div><div class="label">Sedang ditangani</div></div>
+            <div class="card stat"><div class="num">{{ $ticketStats['resolved'] }}</div><div class="label">Selesai</div></div>
+        </div>
+    @endisset
+
+    @isset($userStats)
+        <h2>Pengguna</h2>
+        <div class="grid cols-4">
+            <div class="card stat"><div class="num">{{ $userStats['total'] }}</div><div class="label">Total akun</div></div>
+            <div class="card stat"><div class="num">{{ $userStats['active'] }}</div><div class="label">Aktif</div></div>
+            <div class="card stat"><div class="num">{{ $userStats['pending'] }}</div><div class="label">Belum aktif / nonaktif</div></div>
+        </div>
+    @endisset
+
+    @isset($newSuggestions)
+        <p style="margin-top:16px"><a href="{{ route('admin.suggestions.index', ['status' => 'new']) }}">{{ $newSuggestions }} saran baru</a> menunggu ditinjau.</p>
+    @endisset
+
+    {{-- Tugas teknisi --}}
+    @isset($assigned)
+        <h2>Tugas untuk Anda</h2>
+        @if ($assigned->isEmpty())
+            <p class="muted">Tidak ada laporan yang sedang ditugaskan kepada Anda.</p>
+        @else
+            <div class="card table-wrap">
+                <table>
+                    <thead><tr><th>Nomor</th><th>Judul</th><th>Urgensi</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach ($assigned as $r)
+                        <tr>
+                            <td><a href="{{ route('reports.show', $r) }}">{{ $r->reference }}</a></td>
+                            <td>{{ $r->title }}</td>
+                            <td>{{ $r->urgencyLabel() }}</td>
+                            <td><span class="badge blue">{{ $r->statusLabel() }}</span></td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    @endisset
+
+    {{-- Laporan milik sendiri --}}
+    <h2>Laporan saya</h2>
+    <p class="muted">{{ $myOpenCount }} laporan masih berjalan.</p>
+    @if ($myReports->isEmpty())
+        <p class="muted">Anda belum membuat laporan.</p>
+    @else
+        <div class="card table-wrap">
+            <table>
+                <thead><tr><th>Nomor</th><th>Judul</th><th>Status</th><th>Dibuat</th></tr></thead>
+                <tbody>
+                @foreach ($myReports as $r)
+                    <tr>
+                        <td><a href="{{ route('reports.show', $r) }}">{{ $r->reference }}</a></td>
+                        <td>{{ $r->title }}</td>
+                        <td><span class="badge blue">{{ $r->statusLabel() }}</span></td>
+                        <td>{{ $r->created_at->format('d-m-Y') }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    <div class="btn-row" style="margin-top:20px">
+        <a class="btn" href="{{ route('reports.create') }}">Buat laporan masalah IT</a>
+        <a class="btn gray" href="{{ route('reports.index') }}">Semua laporan saya</a>
+        <a class="btn gray" href="{{ route('suggestions.create') }}">Kirim saran</a>
+    </div>
+
+    {{-- Menu pengelolaan --}}
+    @if ($user->can('viewStaffList', \App\Models\ItReport::class) || isset($newSuggestions) || isset($userStats))
+        <h2>Pengelolaan</h2>
+        <div class="btn-row">
+            @can('viewStaffList', \App\Models\ItReport::class)
+                <a class="btn" href="{{ route('admin.reports.index') }}">Kelola laporan IT</a>
+            @endcan
+            @isset($newSuggestions)
+                <a class="btn" href="{{ route('admin.suggestions.index') }}">Kelola saran</a>
+            @endisset
+            @isset($userStats)
+                <a class="btn" href="{{ route('admin.users.index') }}">Kelola pengguna</a>
+            @endisset
+        </div>
+    @endif
+@endsection

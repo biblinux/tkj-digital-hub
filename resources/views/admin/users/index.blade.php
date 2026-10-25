@@ -1,157 +1,62 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Pengguna - TKJ Digital Hub</title>
+@extends('layouts.app')
 
-    <style>
-        body {
-            margin: 0;
-            padding: 30px;
-            font-family: Arial, sans-serif;
-            background: #f5f6f8;
-            color: #222;
-        }
+@section('title', 'Manajemen Pengguna')
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-        }
+@section('content')
+    <div class="btn-row" style="justify-content:space-between">
+        <h1>Manajemen Pengguna</h1>
+        <a class="btn" href="{{ route('admin.users.create') }}">+ Tambah pengguna</a>
+    </div>
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            margin: 0 0 8px;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            background: #f97316;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .card {
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px #0000000d;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            white-space: nowrap;
-        }
-
-        th, td {
-            padding: 13px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background: #fff7ed;
-        }
-
-        .status {
-            font-weight: bold;
-        }
-
-        .active {
-            color: #15803d;
-        }
-
-        .inactive {
-            color: #b91c1c;
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination nav div {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <div class="header">
-            <div>
-                <h1>Manajemen Pengguna</h1>
-                <p>TKJ Digital Hub — Daftar akun pengguna.</p>
-            </div>
-
-            <a href="{{ route('dashboard') }}" class="button">
-                Kembali ke Dashboard
-            </a>
-
-	    <a href="{{ route('admin.users.create') }}" class="button">
-                + Tambah Pengguna
-            </a>
+    <form method="GET" class="filters card">
+        <div style="flex:2 1 240px">
+            <label for="q">Cari nama, username, atau email</label>
+            <input id="q" name="q" type="search" value="{{ $filters['q'] ?? '' }}" maxlength="100">
         </div>
+        <div>
+            <label for="role">Peran</label>
+            <select id="role" name="role">
+                <option value="">Semua</option>
+                @foreach (\App\Models\User::ROLES as $k => $l)
+                    <option value="{{ $k }}" @selected(($filters['role'] ?? '') === $k)>{{ $l }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="">Semua</option>
+                <option value="active" @selected(($filters['status'] ?? '') === 'active')>Aktif</option>
+                <option value="inactive" @selected(($filters['status'] ?? '') === 'inactive')>Belum aktif / nonaktif</option>
+            </select>
+        </div>
+        <div><button class="btn" type="submit">Terapkan</button></div>
+    </form>
 
-        <section class="card">
-            <p>Total akun: {{ $users->total() }}</p>
-
+    <section class="card">
+        <p class="muted" style="margin-top:0">Total: {{ $users->total() }} akun</p>
+        <div class="table-wrap">
             <table>
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Tanggal Dibuat</th>
-                    </tr>
-                </thead>
-
+                <thead><tr><th>Nama</th><th>Username</th><th>Email</th><th>Peran</th><th>Status</th><th>Dibuat</th></tr></thead>
                 <tbody>
-                    @forelse ($users as $user)
-                        <tr>
-                            <td>
-                                {{ $user->display_name ?: $user->name }}
-                            </td>
-                            <td>{{ $user->username }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->role }}</td>
-                            <td>
-                                @if ($user->is_active)
-                                    <span class="status active">Aktif</span>
-                                @else
-                                    <span class="status inactive">Belum aktif</span>
-                                @endif
-                            </td>
-                            <td>
-                                {{ $user->created_at->format('d-m-Y') }}
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6">Belum ada pengguna.</td>
-                        </tr>
-                    @endforelse
+                @forelse ($users as $u)
+                    <tr>
+                        <td><a href="{{ route('admin.users.show', $u) }}">{{ $u->display_name ?: $u->name }}</a></td>
+                        <td>{{ $u->username }}</td>
+                        <td>{{ $u->email }}</td>
+                        <td>{{ \App\Models\User::ROLES[$u->role] ?? $u->role }}</td>
+                        <td>
+                            @if ($u->is_active)<span class="badge green">Aktif</span>
+                            @else<span class="badge red">Belum aktif / nonaktif</span>@endif
+                        </td>
+                        <td>{{ $u->created_at?->format('d-m-Y') }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6">Tidak ada pengguna yang cocok.</td></tr>
+                @endforelse
                 </tbody>
             </table>
-
-            <div class="pagination">
-                {{ $users->links() }}
-            </div>
-        </section>
-    </main>
-</body>
-</html>
+        </div>
+        <div class="pagination-wrap">{{ $users->links() }}</div>
+    </section>
+@endsection

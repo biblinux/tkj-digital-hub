@@ -2,37 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AccountActivation;
+use App\Services\AccountActivationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AccountActivationController extends Controller
 {
+    public function __construct(private AccountActivationService $activations)
+    {
+    }
+
     public function show(string $token): View
     {
-        $activation = AccountActivation::query()
-            ->where('token_hash', hash('sha256', $token))
-            ->whereNull('used_at')
-            ->where('expires_at', '>', now())
-            ->first();
+        $activation = $this->activations->findValid($token);
 
-        abort_unless($activation, 404, 'Tautan aktivasi tidak valid atau sudah kedaluwarsa.');
+        abort_unless(
+            $activation && $activation->user && ! $activation->user->is_active,
+            404,
+            'Tautan aktivasi tidak valid atau sudah kedaluwarsa.'
+        );
 
         return view('auth.activate', [
             'token' => $token,
             'email' => $activation->user->email,
+            'ttl' => $this->activations->ttlMinutes(),
         ]);
     }
 
     public function activate(Request $request, string $token): RedirectResponse
     {
-        $key = 'account-activation:' . hash('sha256', $token) . '|' . $request->ip();
+        $key = 'account-activation:'.hash('sha256', $token).'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return back()->withErrors([
@@ -48,35 +50,7 @@ class AccountActivationController extends Controller
             ],
         ]);
 
-        $result = DB::transaction(function () use ($token, $validated) {
-            $activation = AccountActivation::query()
-                ->where('token_hash', hash('sha256', $token))
-                ->whereNull('used_at')
-                ->where('expires_at', '>', now())
-                ->lockForUpdate()
-                ->first();
-
-            if (! $activation) {
-                return false;
-            }
-
-            $user = $activation->user;
-
-            if (! $user || $user->is_active) {
-                return false;
-            }
-
-            $user->password = Hash::make($validated['password']);
-            $user->is_active = true;
-            $user->save();
-
-            $activation->used_at = now();
-            $activation->save();
-
-            return true;
-        });
-
-        if (! $result) {
+        if (! $this->activations->activate($token, $validated['password'])) {
             RateLimiter::hit($key, 300);
 
             return redirect()

@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,17 +16,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
-    	]);
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'active' => EnsureUserIsActive::class,
+        ]);
+
+        // Di balik reverse proxy (Nginx/Cloudflare) HTTPS dikenali dari header
+        // X-Forwarded-*. Atur TRUSTED_PROXIES di .env (lihat docs/DEPLOYMENT.md).
+        $proxies = env('TRUSTED_PROXIES');
+        if ($proxies) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : explode(',', $proxies));
+        }
     })
-
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
-        'permission' => \App\Http\Middleware\PermissionMiddleware::class,
-    	]);
-     })
-
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
