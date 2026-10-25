@@ -3,188 +3,257 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccountActivation;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Models\Permission;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\AccountActivationService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    /**
-     * Memastikan pengguna memiliki izin mengelola akun.
-     */
-    private function authorizeUserManagement(Request $request): void
+    public function __construct(private AccountActivationService $activations)
     {
-        abort_unless(
-            $request->user()
-                && $request->user()->is_active
-                && $request->user()->hasPermission('manage_users'),
-            403,
-            'Kamu tidak memiliki izin untuk mengelola pengguna.'
-        );
     }
 
-    /**
-     * Menampilkan daftar pengguna.
-     */
     public function index(Request $request): View
     {
-        $this->authorizeUserManagement($request);
+        Gate::authorize('viewAny', User::class);
+
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'role' => ['nullable', Rule::in(array_keys(User::ROLES))],
+            'status' => ['nullable', Rule::in(['active', 'inactive'])],
+        ]);
 
         $users = User::query()
-            ->select([
-                'id',
-                'name',
-                'username',
-                'email',
-                'display_name',
-                'role',
-                'is_active',
-                'created_at',
-            ])
+            ->select(['id', 'name', 'username', 'email', 'display_name', 'role', 'is_active', 'created_at'])
+            ->when($filters['q'] ?? null, function ($query, $term) {
+                $like = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term).'%';
+
+                $query->where(function ($q) use ($like) {
+                    $q->where('name', 'like', $like)
+                        ->orWhere('username', 'like', $like)
+                        ->orWhere('email', 'like', $like);
+                });
+            })
+            ->when($filters['role'] ?? null, fn ($q, $role) => $q->where('role', $role))
+            ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('is_active', $status === 'active'))
             ->orderByDesc('created_at')
-            ->paginate(15);
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', [
+            'users' => $users,
+            'filters' => $filters,
+        ]);
     }
 
-    /**
-     * Menampilkan formulir tambah pengguna.
-     */
-    public function create(Request $request): View
+    public function create(): View
     {
-        $this->authorizeUserManagement($request);
+        Gate::authorize('create', User::class);
 
-        return view('admin.users.create');
+        return view('admin.users.create', [
+            'roles' => $this->assignableRoles(),
+        ]);
     }
 
-    /**
-     * Membuat akun baru dan mengirim tautan aktivasi.
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $this->authorizeUserManagement($request);
+        $validated = $request->validated();
 
-        // Normalisasi username dan email sebelum validasi.
-        $request->merge([
-            'username' => strtolower(
-                trim((string) $request->input('username'))
-            ),
-            'email' => strtolower(
-                trim((string) $request->input('email'))
-            ),
-        ]);
-
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
-            'username' => [
-                'required',
-                'string',
-                'min:3',
-                'max:30',
-                'regex:/^[a-z0-9._-]+$/',
-                Rule::unique('users', 'username'),
-            ],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email'),
-            ],
-            'role' => [
-                'required',
-                Rule::in(['student', 'technician', 'admin']),
-            ],
-        ]);
-
-        // Hanya super admin yang boleh membuat akun admin.
-        if (
-            $validated['role'] === 'admin'
-            && $request->user()->role !== 'super_admin'
-        ) {
-            abort(
-                403,
-                'Hanya super admin yang boleh membuat akun admin.'
-            );
-        }
-
-        // Token asli hanya digunakan untuk tautan email.
-        // Database menyimpan hash token, bukan token aslinya.
-        $rawToken = Str::random(64);
-
-        // Buat akun dan token dalam satu transaksi database.
-        $user = DB::transaction(function () use (
-            $validated,
-            $rawToken
-        ) {
-            $user = User::create([
+        // Akun dan token dibuat bersama dalam satu transaksi. Email baru
+        // dikirim setelah keduanya tersimpan.
+        $user = DB::transaction(function () use ($validated): User {
+            $user = new User([
                 'name' => $validated['name'],
                 'username' => $validated['username'],
-                'display_name' => $validated['name'],
                 'email' => $validated['email'],
-
-                // Pengguna akan menetapkan password sendiri
-                // melalui halaman aktivasi.
-                'password' => Hash::make(Str::random(64)),
-
-                'role' => $validated['role'],
-                'is_active' => false,
+                'display_name' => $validated['name'],
+                // Kata sandi acak; pengguna menetapkan sendiri saat aktivasi.
+                'password' => Str::random(64),
             ]);
+            $user->role = $validated['role'];
+            $user->is_active = false;
+            $user->save();
 
-            AccountActivation::create([
-                'user_id' => $user->id,
-                'token_hash' => hash('sha256', $rawToken),
-                'expires_at' => now()->addMinutes(60),
-            ]);
+            if ($user->isAdmin()) {
+                $this->grantDefaultAdminPermissions($user);
+            }
 
             return $user;
         });
 
-        // Kirim email setelah transaksi database berhasil.
-        try {
-            Mail::send(
-                'emails.account-activation',
-                [
-                    'name' => $user->name,
-                    'activationUrl' => route(
-                        'activation.show',
-                        ['token' => $rawToken]
-                    ),
-                ],
-                function ($message) use ($user) {
-                    $message
-                        ->to($user->email)
-                        ->subject(
-                            'Aktivasi Akun TKJ Digital Hub'
-                        );
-                }
-            );
-        } catch (\Throwable $exception) {
-            report($exception);
+        $rawToken = $this->activations->issue($user);
 
+        if (! $this->activations->send($user, $rawToken)) {
             return redirect()
-                ->route('admin.users.index')
-                ->with(
-                    'error',
-                    'Akun dibuat, tetapi email aktivasi gagal diproses. Periksa konfigurasi email sebelum mencoba kembali.'
-                );
+                ->route('admin.users.show', $user)
+                ->with('error', 'Akun dibuat, tetapi email aktivasi gagal dikirim. '
+                    .'Periksa konfigurasi email lalu gunakan tombol "Kirim ulang aktivasi".');
         }
 
         return redirect()
-            ->route('admin.users.index')
-            ->with(
-                'success',
-                'Akun berhasil dibuat. Tautan aktivasi berlaku selama 60 menit.'
-            );
+            ->route('admin.users.show', $user)
+            ->with('success', 'Akun berhasil dibuat. Tautan aktivasi berlaku '
+                .$this->activations->ttlMinutes().' menit.');
+    }
+
+    public function show(User $user): View
+    {
+        Gate::authorize('view', $user);
+
+        $user->load(['permissions', 'activation']);
+
+        return view('admin.users.show', [
+            'user' => $user,
+            'permissions' => Permission::orderBy('name')->get(),
+        ]);
+    }
+
+    public function edit(User $user): View
+    {
+        Gate::authorize('update', $user);
+
+        return view('admin.users.edit', [
+            'user' => $user,
+            'roles' => $this->assignableRoles(),
+        ]);
+    }
+
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated, $user) {
+            $previousRole = $user->role;
+
+            $user->fill([
+                'name' => $validated['name'],
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+                'display_name' => $validated['name'],
+            ]);
+
+            if (isset($validated['role'])) {
+                $user->role = $validated['role'];
+            }
+
+            $user->save();
+
+            if ($previousRole !== $user->role) {
+                if ($user->isAdmin()) {
+                    $this->grantDefaultAdminPermissions($user);
+                } else {
+                    $user->permissions()->detach();
+                }
+
+                // Peran berubah: paksa login ulang agar hak akses baru berlaku.
+                $this->revokeSessions($user);
+            }
+        });
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Data pengguna diperbarui.');
+    }
+
+    public function deactivate(User $user): RedirectResponse
+    {
+        Gate::authorize('deactivate', $user);
+
+        // Jangan sampai tidak ada super admin aktif yang tersisa.
+        if ($user->isSuperAdmin()
+            && User::where('role', User::ROLE_SUPER_ADMIN)->where('is_active', true)->count() <= 1) {
+            return back()->with('error', 'Super admin aktif terakhir tidak dapat dinonaktifkan.');
+        }
+
+        $user->is_active = false;
+        $user->save();
+        $this->revokeSessions($user);
+
+        return back()->with('success', 'Akun dinonaktifkan dan semua sesi login dihentikan.');
+    }
+
+    public function reactivate(User $user): RedirectResponse
+    {
+        Gate::authorize('reactivate', $user);
+
+        $user->is_active = true;
+        $user->save();
+
+        return back()->with('success', 'Akun diaktifkan kembali.');
+    }
+
+    public function resendActivation(User $user): RedirectResponse
+    {
+        Gate::authorize('resendActivation', $user);
+
+        $key = 'resend-activation:'.$user->id;
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            return back()->with('error', 'Terlalu sering mengirim ulang. Coba lagi dalam '
+                .ceil(RateLimiter::availableIn($key) / 60).' menit.');
+        }
+
+        RateLimiter::hit($key, 600);
+
+        // Token baru otomatis membatalkan token lama.
+        if (! $this->activations->issueAndSend($user)) {
+            return back()->with('error', 'Email aktivasi gagal dikirim. Periksa konfigurasi email.');
+        }
+
+        return back()->with('success', 'Tautan aktivasi baru dikirim. Tautan lama tidak berlaku lagi.');
+    }
+
+    public function updatePermissions(Request $request, User $user): RedirectResponse
+    {
+        Gate::authorize('managePermissions', $user);
+
+        $validated = $request->validate([
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string', Rule::exists('permissions', 'name')],
+        ]);
+
+        $ids = Permission::whereIn('name', $validated['permissions'] ?? [])->pluck('id');
+        $user->permissions()->sync($ids);
+
+        return back()->with('success', 'Izin admin diperbarui.');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function assignableRoles(): array
+    {
+        $allowed = app(\App\Policies\UserPolicy::class)->assignableRoles(auth()->user());
+
+        return collect(User::ROLES)->only($allowed)->all();
+    }
+
+    private function grantDefaultAdminPermissions(User $user): void
+    {
+        $ids = Permission::whereIn('name', User::ADMIN_DEFAULT_PERMISSIONS)->pluck('id');
+        $user->permissions()->syncWithoutDetaching($ids);
+    }
+
+    /**
+     * Menghentikan semua sesi aktif pengguna (bila sesi disimpan di database).
+     */
+    private function revokeSessions(User $user): void
+    {
+        if (config('session.driver') === 'database') {
+            DB::table(config('session.table', 'sessions'))
+                ->where('user_id', $user->id)
+                ->delete();
+        }
     }
 }

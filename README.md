@@ -1,58 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TKJ Digital Hub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website informasi resmi jurusan Teknik Komputer dan Jaringan (TKJ), dibangun dengan Laravel.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Halaman publik: beranda, profil, kompetensi, kepengurusan, tim IT, topologi, galeri, fasilitas, kontak.
+- Formulir saran (publik, dengan pembatasan percobaan) dan laporan masalah IT (wajib login).
+- Dashboard sesuai role: `student`, `technician`, `admin`, `super_admin`.
+- Laporan IT: kategori, urgensi, status, penugasan teknisi, catatan, dan riwayat perubahan status.
+- Manajemen pengguna: daftar, pencarian, filter, detail, ubah, nonaktifkan, kelola permission.
+- Aktivasi akun lewat tautan email berbatas waktu (token disimpan sebagai hash).
+- Halaman error 403, 404, 419, 429, 500, dan 503.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Data sekolah yang belum tersedia (nama, alamat, kontak) ditampilkan sebagai "belum diisi".
+Isi lewat variabel `SCHOOL_*` di `.env` atau di `config/tkj.php`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Menjalankan secara lokal
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Kebutuhan: PHP 8.3+, Composer, Node.js (opsional, untuk aset Vite), SQLite.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate          # aman: hanya menambah, tidak menghapus data
+php artisan db:seed          # idempotent; menambah akun uji hanya di APP_ENV=local
+php artisan tkj:create-super-admin   # membuat akun super admin pertama
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Buka http://localhost:8000. Email aktivasi pada mode `MAIL_MAILER=log` ditulis ke
+`storage/logs/laravel.log`.
 
-## Contributing
+> Jangan menjalankan `migrate:fresh` atau `migrate:refresh` pada database yang berisi data.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Pengujian
 
-## Code of Conduct
+```bash
+php artisan test
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Pengujian memakai SQLite di memori (lihat `phpunit.xml`), sehingga database
+pengembangan tidak tersentuh. Mailer pengujian adalah `array`, jadi tidak ada email sungguhan yang dikirim.
 
-## Security Vulnerabilities
+## Email
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Konfigurasi email sepenuhnya lewat `.env`. Untuk produksi:
 
-## License
+```dotenv
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.penyedia-anda.example
+MAIL_PORT=587
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+MAIL_FROM_ADDRESS="noreply@jarvar.web.id"
+MAIL_FROM_NAME="TKJ Digital Hub"
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Alamat `noreply@jarvar.web.id` baru boleh dipakai setelah domain diverifikasi di penyedia
+email (SPF, DKIM, DMARC). Jangan menaruh kredensial SMTP di kode atau di Git.
+
+## Deployment
+
+Lihat [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
