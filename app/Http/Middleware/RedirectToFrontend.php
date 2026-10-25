@@ -17,7 +17,7 @@ class RedirectToFrontend
     {
         $frontend = config('tkj.frontend_url');
 
-        if (! is_string($frontend) || $frontend === '' || ! $request->isMethod('GET')) {
+        if (! is_string($frontend) || $frontend === '' || ! in_array($request->method(), ['GET', 'HEAD'], true)) {
             return $next($request);
         }
 
