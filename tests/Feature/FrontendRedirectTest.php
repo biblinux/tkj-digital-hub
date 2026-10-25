@@ -27,6 +27,13 @@ class FrontendRedirectTest extends TestCase
         }
     }
 
+    public function test_head_requests_are_redirected_too(): void
+    {
+        config(['tkj.frontend_url' => 'https://jarvar.web.id']);
+
+        $this->call('HEAD', '/profil')->assertRedirect('https://jarvar.web.id/');
+    }
+
     public function test_redirect_target_ignores_user_input(): void
     {
         config(['tkj.frontend_url' => 'https://jarvar.web.id']);
