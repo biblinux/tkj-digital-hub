@@ -20,6 +20,8 @@ class RouteProtectionTest extends TestCase
         'suggestions.create', 'suggestions.store',
         'activation.show', 'activation.activate',
         'login', 'login.store',
+        // API publik (dibatasi throttle): opsi formulir, kirim saran, dan login token.
+        'api.meta', 'api.suggestions.store', 'api.auth.login',
     ];
 
     public function test_every_non_public_route_requires_authentication(): void
@@ -35,8 +37,14 @@ class RouteProtectionTest extends TestCase
                 continue;
             }
 
-            $this->assertContains('auth', $route->gatherMiddleware(), "Route '{$name}' tidak dilindungi middleware auth.");
-            $this->assertContains('active', $route->gatherMiddleware(), "Route '{$name}' tidak memeriksa akun aktif.");
+            // Route API memakai token Bearer (api.auth), yang sudah menolak
+            // akun nonaktif; route web memakai sesi (auth + active).
+            if (str_starts_with($name, 'api.')) {
+                $this->assertContains('api.auth', $route->gatherMiddleware(), "Route API '{$name}' tidak dilindungi api.auth.");
+            } else {
+                $this->assertContains('auth', $route->gatherMiddleware(), "Route '{$name}' tidak dilindungi middleware auth.");
+                $this->assertContains('active', $route->gatherMiddleware(), "Route '{$name}' tidak memeriksa akun aktif.");
+            }
             $checked++;
         }
 

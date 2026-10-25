@@ -21,6 +21,9 @@ return [
     // Masa berlaku tautan aktivasi akun (menit).
     'activation_ttl_minutes' => (int) env('ACTIVATION_TTL_MINUTES', 60),
 
+    // Masa berlaku token API untuk frontend statis (menit). Bawaan: 7 hari.
+    'api_token_ttl_minutes' => (int) env('API_TOKEN_TTL_MINUTES', 10080),
+
     // Identitas sekolah. Isi lewat .env; kosong = ditampilkan sebagai "belum diisi".
     'school' => [
         'name' => env('SCHOOL_NAME'),

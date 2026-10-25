@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ItReport;
 use App\Models\ItReportUpdate;
 use App\Models\User;
+use App\Services\ItReportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,26 +45,7 @@ class ItReportController extends Controller
             'urgency' => ['required', Rule::in(array_keys(ItReport::URGENCIES))],
         ]);
 
-        $report = DB::transaction(function () use ($validated, $request): ItReport {
-            $report = new ItReport($validated);
-            $report->user_id = $request->user()->id;
-            $report->status = 'open';
-            $report->save();
-
-            $report->reference = sprintf('TKJ-%s-%05d', now()->format('Y'), $report->id);
-            $report->save();
-
-            ItReportUpdate::create([
-                'it_report_id' => $report->id,
-                'user_id' => $request->user()->id,
-                'from_status' => null,
-                'to_status' => 'open',
-                'note' => 'Laporan dibuat.',
-                'is_internal' => false,
-            ]);
-
-            return $report;
-        });
+        $report = app(ItReportService::class)->create($request->user(), $validated);
 
         return redirect()
             ->route('reports.show', $report)
@@ -117,12 +99,7 @@ class ItReportController extends Controller
             'note' => ['required', 'string', 'min:2', 'max:2000'],
         ]);
 
-        ItReportUpdate::create([
-            'it_report_id' => $report->id,
-            'user_id' => $request->user()->id,
-            'note' => $validated['note'],
-            'is_internal' => false,
-        ]);
+        app(ItReportService::class)->addReporterNote($request->user(), $report, $validated['note']);
 
         return back()->with('success', 'Keterangan ditambahkan.');
     }
