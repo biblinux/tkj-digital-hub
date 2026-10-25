@@ -35,6 +35,11 @@ Buka http://localhost:8000. Email aktivasi pada mode `MAIL_MAILER=log` ditulis k
 
 > Jangan menjalankan `migrate:fresh` atau `migrate:refresh` pada database yang berisi data.
 
+## API untuk frontend statis
+
+Frontend statis di jarvar.web.id dapat memakai API JSON di `/api/v1` (login token, saran, laporan IT).
+Lihat [docs/API.md](docs/API.md).
+
 ## Pengujian
 
 ```bash

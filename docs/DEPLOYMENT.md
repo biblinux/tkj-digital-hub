@@ -29,6 +29,8 @@ APP_URL=https://jarvar.web.id
 SESSION_SECURE_COOKIE=true
 ```
 
+Jika frontend statis dihosting terpisah, isi juga `CORS_ALLOWED_ORIGINS` (lihat `docs/API.md`).
+
 `APP_DEBUG` wajib `false` di produksi agar detail error tidak bocor. Isi juga `MAIL_*`
 (lihat README) dan `SCHOOL_*`.
 
