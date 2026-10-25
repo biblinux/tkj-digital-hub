@@ -15,6 +15,14 @@ CORS_ALLOWED_ORIGINS=https://jarvar.web.id,https://www.jarvar.web.id
 API_TOKEN_TTL_MINUTES=10080
 ```
 
+Agar halaman publik Laravel tidak tampil ganda di alamat backend, isi juga:
+
+```dotenv
+FRONTEND_URL=https://jarvar.web.id
+```
+
+Halaman publik backend lalu dialihkan ke frontend. Login, dashboard, admin, aktivasi akun, dan API tetap aktif.
+
 Jika `CORS_ALLOWED_ORIGINS` kosong, tidak ada situs lain yang boleh memanggil API dari browser.
 
 ## Autentikasi

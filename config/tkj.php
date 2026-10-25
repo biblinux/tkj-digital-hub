@@ -21,6 +21,10 @@ return [
     // Masa berlaku tautan aktivasi akun (menit).
     'activation_ttl_minutes' => (int) env('ACTIVATION_TTL_MINUTES', 60),
 
+    // Alamat situs frontend (mis. https://jarvar.web.id). Jika diisi, halaman
+    // publik Laravel dialihkan ke sana. Kosong = halaman publik Laravel aktif.
+    'frontend_url' => env('FRONTEND_URL'),
+
     // Masa berlaku token API untuk frontend statis (menit). Bawaan: 7 hari.
     'api_token_ttl_minutes' => (int) env('API_TOKEN_TTL_MINUTES', 10080),
 

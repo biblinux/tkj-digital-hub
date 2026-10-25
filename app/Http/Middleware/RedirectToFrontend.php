@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Jika FRONTEND_URL diisi, halaman publik Laravel dialihkan ke situs frontend
+ * agar tidak ada dua situs yang tampil ganda. Rute login, dashboard, admin,
+ * aktivasi, dan API tidak terpengaruh.
+ */
+class RedirectToFrontend
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $frontend = config('tkj.frontend_url');
+
+        if (! is_string($frontend) || $frontend === '' || ! $request->isMethod('GET')) {
+            return $next($request);
+        }
+
+        // Alamat tujuan tetap dari konfigurasi, bukan dari input pengguna,
+        // sehingga tidak bisa dipakai sebagai open redirect.
+        return redirect()->away(rtrim($frontend, '/').'/', 302);
+    }
+}

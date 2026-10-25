@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | Halaman publik
 |--------------------------------------------------------------------------
 */
-Route::controller(PageController::class)->group(function () {
+Route::middleware('frontend')->controller(PageController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/profil', 'profile')->name('pages.profile');
     Route::get('/kompetensi', 'competencies')->name('pages.competencies');
@@ -26,7 +26,9 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/kontak', 'contact')->name('pages.contact');
 });
 
-Route::get('/saran', [SuggestionController::class, 'create'])->name('suggestions.create');
+Route::get('/saran', [SuggestionController::class, 'create'])
+    ->middleware('frontend')
+    ->name('suggestions.create');
 Route::post('/saran', [SuggestionController::class, 'store'])
     ->middleware('throttle:5,10')
     ->name('suggestions.store');
