@@ -3,6 +3,7 @@
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RedirectToFrontend;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'active' => EnsureUserIsActive::class,
             'api.auth' => AuthenticateApiToken::class,
+            'frontend' => RedirectToFrontend::class,
         ]);
 
         // Di balik reverse proxy (Nginx/Cloudflare) HTTPS dikenali dari header
