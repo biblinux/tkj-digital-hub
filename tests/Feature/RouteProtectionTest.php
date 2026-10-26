@@ -21,7 +21,7 @@ class RouteProtectionTest extends TestCase
         'activation.show', 'activation.activate',
         'login', 'login.store',
         // API publik (dibatasi throttle): opsi formulir, kirim saran, dan login token.
-        'api.meta', 'api.suggestions.store', 'api.auth.login',
+        'api.meta', 'api.content', 'api.suggestions.store', 'api.auth.login',
     ];
 
     public function test_every_non_public_route_requires_authentication(): void

@@ -1,16 +1,19 @@
-/* TKJ Digital Hub - tema oranye, responsif, tanpa dependensi build. */
+/* TKJ Digital Hub - tema oranye, responsif, tanpa dependensi build.
+   Palet, huruf, header, dan footer sengaja disamakan dengan frontend (jarvar.web.id). */
 :root {
-    --orange-50: #fff7ed;
-    --orange-100: #ffedd5;
-    --orange-200: #fed7aa;
-    --orange-500: #f97316;
-    --orange-600: #ea580c;
-    --orange-700: #c2410c;
-    --orange-800: #9a3412;
-    --ink: #1c1917;
-    --ink-soft: #57534e;
-    --line: #e7e5e4;
-    --bg: #fafaf9;
+    --orange-50: #FFF1E6;
+    --orange-100: #FFE3CF;
+    --orange-200: #F5C9A6;
+    --orange-500: #F07A1A;
+    --orange-600: #C84F08;
+    --orange-700: #A94106;
+    --orange-800: #7C2D04;
+    --ink: #1B1F24;
+    --ink-soft: #4B5563;
+    --line: #E3E5E9;
+    --grey: #F4F5F7;
+    --grey-3: #9AA1AB;
+    --bg: #FFFFFF;
     --white: #fff;
     --green: #15803d;
     --green-bg: #dcfce7;
@@ -21,6 +24,7 @@
     --amber-bg: #fef3c7;
     --amber: #92400e;
     --radius: 10px;
+    --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -32,8 +36,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    line-height: 1.6;
+    font-family: var(--font);
+    line-height: 1.65;
     color: var(--ink);
     background: var(--bg);
 }
@@ -60,57 +64,46 @@ a:hover { color: var(--orange-800); }
 .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
 .container.narrow { max-width: 720px; }
 
-/* Header */
+/* Header (sama dengan frontend: penanda TKJ, garis tipis abu-abu) */
 .site-header {
     background: var(--white);
-    border-bottom: 3px solid var(--orange-500);
+    border-bottom: 1px solid var(--line);
     position: sticky;
     top: 0;
     z-index: 50;
 }
-.header-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; }
-.brand { font-weight: 800; font-size: 1.15rem; color: var(--orange-700); text-decoration: none; }
-.brand small { display: block; font-weight: 400; font-size: .72rem; color: var(--ink-soft); }
-.nav-toggle {
-    display: none;
-    background: var(--orange-600);
-    color: #fff;
-    border: 0;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 1rem;
-    cursor: pointer;
+.header-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.brand-mark {
+    display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 8px;
+    background: var(--orange-600); color: #fff; font-weight: 800; font-size: .85rem; letter-spacing: .02em;
 }
-.main-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
-.main-nav a, .main-nav button.link {
-    display: block;
-    padding: 8px 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--ink);
-    font-size: .95rem;
-    background: none;
-    border: 0;
-    cursor: pointer;
-    font-family: inherit;
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-text strong { font-size: 1.05rem; }
+.brand-text small { color: var(--ink-soft); font-size: .8rem; font-weight: 400; }
+.header-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.header-actions a.plain, .header-actions button.link {
+    padding: 8px 12px; border-radius: 8px; text-decoration: none; color: var(--ink);
+    font: inherit; font-size: .95rem; font-weight: 600; background: none; border: 0; cursor: pointer;
 }
-.main-nav a:hover, .main-nav button.link:hover { background: var(--orange-100); }
-.main-nav a[aria-current="page"] { background: var(--orange-100); color: var(--orange-800); font-weight: 700; }
-.main-nav .cta { background: var(--orange-600); color: #fff; }
-.main-nav .cta:hover { background: var(--orange-700); color: #fff; }
+.header-actions a.plain:hover, .header-actions button.link:hover { background: var(--grey); }
+.header-actions a[aria-current="page"] { color: var(--orange-600); }
+.header-actions .who { color: var(--ink-soft); font-size: .9rem; padding: 0 6px; }
 
-@media (max-width: 860px) {
-    .nav-toggle { display: inline-block; }
-    .main-nav { display: none; width: 100%; }
-    .main-nav.open { display: block; }
-    .header-bar { flex-wrap: wrap; }
-    .main-nav ul { flex-direction: column; padding-bottom: 10px; }
+/* Bar menu pengelolaan: bergulir mendatar di layar kecil, tanpa JavaScript */
+.admin-nav { background: var(--grey); border-top: 1px solid var(--line); }
+.admin-nav ul { list-style: none; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
+.admin-nav a {
+    display: block; padding: 11px 14px; text-decoration: none; color: var(--ink);
+    font-weight: 600; font-size: .93rem; white-space: nowrap; border-bottom: 3px solid transparent;
 }
+.admin-nav a:hover { color: var(--orange-600); }
+.admin-nav a[aria-current="page"] { color: var(--orange-600); border-bottom-color: var(--orange-600); }
 
 /* Main */
 main { flex: 1; padding: 28px 0 48px; }
 
-h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 8px; color: var(--orange-800); }
+h1 { font-size: 1.9rem; line-height: 1.2; letter-spacing: -0.01em; font-weight: 800; margin: 0 0 8px; color: var(--ink); }
 h2 { font-size: 1.3rem; margin: 28px 0 10px; }
 h3 { font-size: 1.05rem; margin: 0 0 6px; }
 .lead { color: var(--ink-soft); font-size: 1.05rem; margin-top: 0; }
@@ -152,15 +145,15 @@ h3 { font-size: 1.05rem; margin: 0 0 6px; }
     background: var(--orange-600);
     color: #fff;
     font: inherit;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
 }
 .btn:hover { background: var(--orange-700); color: #fff; }
 .btn.light { background: #fff; color: var(--orange-700); }
 .btn.light:hover { background: var(--orange-50); color: var(--orange-800); }
-.btn.gray { background: #57534e; }
-.btn.gray:hover { background: #44403c; }
+.btn.gray { background: var(--ink-soft); }
+.btn.gray:hover { background: var(--ink); }
 .btn.danger { background: var(--red); }
 .btn.danger:hover { background: #991b1b; }
 .btn.small { padding: 6px 12px; font-size: .88rem; }
@@ -172,7 +165,7 @@ input[type=text], input[type=email], input[type=password], input[type=search],
 select, textarea {
     width: 100%;
     padding: 11px 12px;
-    border: 1px solid #a8a29e;
+    border: 1.5px solid var(--grey-3);
     border-radius: 8px;
     font: inherit;
     background: #fff;
@@ -199,7 +192,7 @@ textarea { min-height: 130px; resize: vertical; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { background: var(--orange-50); font-size: .88rem; white-space: nowrap; }
+th { background: var(--grey); font-size: .88rem; white-space: nowrap; }
 
 .badge {
     display: inline-block;
@@ -239,9 +232,12 @@ dl.details dd { margin: 0; overflow-wrap: anywhere; }
 .pagination-wrap svg { width: 18px; height: 18px; }
 .pagination-wrap nav span, .pagination-wrap nav a { font-size: .9rem; }
 
-/* Footer */
-.site-footer { background: #292524; color: #d6d3d1; padding: 24px 0; font-size: .9rem; }
-.site-footer a { color: #fdba74; }
+/* Footer (gelap, sama dengan frontend) */
+.site-footer { background: var(--ink); color: #D5D9DF; padding: 28px 0; font-size: .92rem; }
+.site-footer a { color: #D5D9DF; }
+.site-footer a:hover { color: #fff; }
+.foot-brand { font-weight: 800; font-size: 1.1rem; color: #fff; margin: 0 0 6px; }
+.foot-line { margin: 0 0 4px; color: #AEB4BD; }
 
 /* Halaman autentikasi / error */
 .center-page { display: grid; place-items: center; padding: 20px 0; }
