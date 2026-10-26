@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AccountActivationController;
+use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\OrgMemberController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -98,6 +102,15 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::patch('/kelola/saran/{suggestion}', [SuggestionController::class, 'update'])
         ->whereNumber('suggestion')
         ->name('admin.suggestions.update');
+
+    // Pengelolaan konten website (berita, galeri, fasilitas, struktur organisasi).
+    Route::middleware('permission:manage_site_content')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('news', NewsController::class)->except('show');
+        Route::resource('gallery', GalleryController::class)->except('show');
+        Route::resource('facilities', FacilityController::class)->except('show');
+        Route::resource('organization', OrgMemberController::class)->except('show')
+            ->parameters(['organization' => 'member']);
+    });
 
     // Manajemen pengguna: otorisasi lewat UserPolicy di controller,
     // ditambah middleware izin sebagai lapisan pertama.

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ItReportController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\SuggestionController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::prefix('v1')->name('api.')->group(function () {
     Route::get('/meta', MetaController::class)->middleware('throttle:60,1')->name('meta');
+    Route::get('/content', ContentController::class)->middleware('throttle:60,1')->name('content');
 
     Route::post('/suggestions', [SuggestionController::class, 'store'])
         ->middleware('throttle:5,10')

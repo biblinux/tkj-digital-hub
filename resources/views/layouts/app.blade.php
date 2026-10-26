@@ -5,47 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', config('tkj.name')) - {{ config('tkj.name') }}</title>
     <meta name="description" content="@yield('description', config('tkj.tagline'))">
-    <meta name="theme-color" content="#ea580c">
+    <meta name="theme-color" content="#C84F08">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
     <link rel="stylesheet" href="{{ asset('css/tkj.css') }}">
 </head>
+@php
+    $frontend = config('tkj.frontend_url');
+    $user = auth()->user();
+    $can = fn (string $permission) => $user && $user->hasPermission($permission);
+
+    // Menu pengelolaan: hanya yang boleh diakses akun ini. Server tetap memeriksa
+    // izin pada setiap rute; menu ini hanya merapikan tampilan.
+    $adminLinks = [];
+    if ($user) {
+        $adminLinks[] = ['Dashboard', route('dashboard'), request()->routeIs('dashboard')];
+        if ($can('manage_site_content')) {
+            $adminLinks[] = ['Berita', route('admin.news.index'), request()->routeIs('admin.news.*')];
+            $adminLinks[] = ['Galeri', route('admin.gallery.index'), request()->routeIs('admin.gallery.*')];
+            $adminLinks[] = ['Fasilitas', route('admin.facilities.index'), request()->routeIs('admin.facilities.*')];
+            $adminLinks[] = ['Struktur dan Tim', route('admin.organization.index'), request()->routeIs('admin.organization.*')];
+        }
+        if ($can('manage_suggestions')) {
+            $adminLinks[] = ['Saran', route('admin.suggestions.index'), request()->routeIs('admin.suggestions.*')];
+        }
+        if (\Illuminate\Support\Facades\Gate::allows('viewStaffList', \App\Models\ItReport::class)) {
+            $adminLinks[] = ['Laporan IT', route('admin.reports.index'), request()->routeIs('admin.reports.*', 'reports.*')];
+        } else {
+            $adminLinks[] = ['Laporan saya', route('reports.index'), request()->routeIs('reports.*')];
+        }
+        if ($can('manage_users')) {
+            $adminLinks[] = ['Pengguna', route('admin.users.index'), request()->routeIs('admin.users.*')];
+        }
+    }
+@endphp
 <body>
     <a class="skip-link" href="#konten">Lewati ke konten utama</a>
 
     <header class="site-header">
         <div class="container header-bar">
-            <a class="brand" href="{{ route('home') }}">
-                {{ config('tkj.name') }}
-                <small>Teknik Komputer dan Jaringan</small>
+            <a class="brand" href="{{ $user ? route('dashboard') : ($frontend ?: route('home')) }}">
+                <span class="brand-mark" aria-hidden="true">TKJ</span>
+                <span class="brand-text">
+                    <strong>{{ config('tkj.name') }}</strong>
+                    <small>{{ config('tkj.school.name') ?: 'Teknik Komputer dan Jaringan' }}</small>
+                </span>
             </a>
 
-            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-utama" id="nav-toggle">
-                Menu
-            </button>
+            <nav class="header-actions" aria-label="Navigasi utama">
+                @if ($frontend)
+                    <a class="plain" href="{{ $frontend }}" rel="noopener">Lihat situs</a>
+                @else
+                    <a class="plain" href="{{ route('home') }}" @if (request()->routeIs('home')) aria-current="page" @endif>Beranda</a>
+                    <a class="plain" href="{{ route('pages.profile') }}" @if (request()->routeIs('pages.profile')) aria-current="page" @endif>Profil</a>
+                    <a class="plain" href="{{ route('pages.facilities') }}" @if (request()->routeIs('pages.facilities')) aria-current="page" @endif>Fasilitas</a>
+                    <a class="plain" href="{{ route('pages.gallery') }}" @if (request()->routeIs('pages.gallery')) aria-current="page" @endif>Galeri</a>
+                    <a class="plain" href="{{ route('suggestions.create') }}" @if (request()->routeIs('suggestions.*')) aria-current="page" @endif>Saran</a>
+                    <a class="plain" href="{{ route('pages.contact') }}" @if (request()->routeIs('pages.contact')) aria-current="page" @endif>Kontak</a>
+                @endif
 
-            <nav class="main-nav" id="menu-utama" aria-label="Navigasi utama">
-                <ul>
-                    <li><a href="{{ route('home') }}" @if (request()->routeIs('home')) aria-current="page" @endif>Beranda</a></li>
-                    <li><a href="{{ route('pages.profile') }}" @if (request()->routeIs('pages.profile')) aria-current="page" @endif>Profil</a></li>
-                    <li><a href="{{ route('pages.competencies') }}" @if (request()->routeIs('pages.competencies')) aria-current="page" @endif>Kompetensi</a></li>
-                    <li><a href="{{ route('pages.facilities') }}" @if (request()->routeIs('pages.facilities')) aria-current="page" @endif>Fasilitas</a></li>
-                    <li><a href="{{ route('pages.gallery') }}" @if (request()->routeIs('pages.gallery')) aria-current="page" @endif>Galeri</a></li>
-                    <li><a href="{{ route('suggestions.create') }}" @if (request()->routeIs('suggestions.*')) aria-current="page" @endif>Saran</a></li>
-                    <li><a href="{{ route('pages.contact') }}" @if (request()->routeIs('pages.contact')) aria-current="page" @endif>Kontak</a></li>
-
-                    @auth
-                        <li><a href="{{ route('dashboard') }}" class="cta" @if (request()->routeIs('dashboard')) aria-current="page" @endif>Dashboard</a></li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="link">Keluar</button>
-                            </form>
-                        </li>
-                    @else
-                        <li><a href="{{ route('login') }}" class="cta">Masuk</a></li>
-                    @endauth
-                </ul>
+                @auth
+                    <span class="who">{{ $user->shownName() }}</span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="link">Keluar</button>
+                    </form>
+                @else
+                    <a class="btn small" href="{{ route('login') }}">Masuk</a>
+                @endauth
             </nav>
         </div>
+
+        @if ($adminLinks)
+            <nav class="admin-nav" aria-label="Menu pengelolaan">
+                <ul class="container">
+                    @foreach ($adminLinks as [$label, $href, $active])
+                        <li><a href="{{ $href }}" @if ($active) aria-current="page" @endif>{{ $label }}</a></li>
+                    @endforeach
+                </ul>
+            </nav>
+        @endif
     </header>
 
     <main id="konten" tabindex="-1">
@@ -57,29 +97,22 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p style="margin:0 0 6px">
-                &copy; {{ now()->format('Y') }} {{ config('tkj.name') }}
+            <p class="foot-brand">{{ config('tkj.name') }}</p>
+            <p class="foot-line">
+                &copy; {{ now()->format('Y') }} Teknik Komputer dan Jaringan
                 @if (config('tkj.school.name')) &middot; {{ config('tkj.school.name') }} @endif
             </p>
-            <p style="margin:0">
-                <a href="{{ route('pages.organization') }}">Kepengurusan</a> &middot;
-                <a href="{{ route('pages.it-team') }}">Tim IT</a> &middot;
-                <a href="{{ route('pages.topology') }}">Topologi jaringan</a> &middot;
-                <a href="{{ route('suggestions.create') }}">Kirim saran</a>
-            </p>
+            @if ($frontend)
+                <p class="foot-line"><a href="{{ $frontend }}" rel="noopener">Kembali ke situs jurusan</a></p>
+            @else
+                <p class="foot-line">
+                    <a href="{{ route('pages.organization') }}">Kepengurusan</a> &middot;
+                    <a href="{{ route('pages.it-team') }}">Tim IT</a> &middot;
+                    <a href="{{ route('pages.topology') }}">Topologi jaringan</a> &middot;
+                    <a href="{{ route('suggestions.create') }}">Kirim saran</a>
+                </p>
+            @endif
         </div>
     </footer>
-
-    <script>
-        (function () {
-            var btn = document.getElementById('nav-toggle');
-            var nav = document.getElementById('menu-utama');
-            if (!btn || !nav) return;
-            btn.addEventListener('click', function () {
-                var open = nav.classList.toggle('open');
-                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-            });
-        })();
-    </script>
 </body>
 </html>

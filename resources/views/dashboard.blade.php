@@ -6,6 +6,18 @@
     <h1>Dashboard</h1>
     <p class="lead">Selamat datang, {{ $user->shownName() }}. <span class="badge">{{ $user->roleLabel() }}</span></p>
 
+    {{-- Pengelolaan konten website --}}
+    @if ($user->hasPermission('manage_site_content'))
+        <h2>Kelola konten website</h2>
+        <p class="muted" style="margin-top:0">Perubahan tampil di situs jurusan setelah status diterbitkan.</p>
+        <div class="grid cols-4">
+            <a class="card accent" href="{{ route('admin.news.index') }}" style="text-decoration:none"><h3>Berita</h3><span class="muted">Berita dan pengumuman</span></a>
+            <a class="card accent" href="{{ route('admin.gallery.index') }}" style="text-decoration:none"><h3>Galeri</h3><span class="muted">Foto kegiatan</span></a>
+            <a class="card accent" href="{{ route('admin.facilities.index') }}" style="text-decoration:none"><h3>Fasilitas</h3><span class="muted">Laboratorium dan ruang praktik</span></a>
+            <a class="card accent" href="{{ route('admin.organization.index') }}" style="text-decoration:none"><h3>Struktur dan Tim</h3><span class="muted">Pengurus dan tim IT</span></a>
+        </div>
+    @endif
+
     {{-- Statistik pengelola --}}
     @isset($ticketStats)
         <h2>Ringkasan laporan IT</h2>

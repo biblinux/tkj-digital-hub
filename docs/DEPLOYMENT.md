@@ -115,3 +115,38 @@ perbaiki permission, lalu `php artisan up`. Simpan salinan cadangan di luar serv
 - Email tidak terkirim: periksa `MAIL_*`, verifikasi domain pengirim, dan log aplikasi.
   Akun yang gagal dikirimi email dapat dikirimi ulang tautan dari halaman detail pengguna.
 - Tautan aktivasi kedaluwarsa: gunakan fitur kirim ulang aktivasi.
+
+## 11. Konten website dan unggah foto (dashboard admin)
+
+Berita, galeri, fasilitas, dan struktur organisasi dikelola di dashboard
+(`/admin/news`, `/admin/gallery`, `/admin/facilities`, `/admin/organization`).
+Frontend membaca konten terbit lewat `GET /api/v1/content`; draf tidak pernah ikut terkirim.
+Jika backend tidak terjangkau, frontend menampilkan data contoh bawaan.
+
+Agar unggah foto berfungsi di server, lakukan sekali:
+
+```bash
+php artisan storage:link
+apt install -y php8.4-gd          # untuk memperkecil foto dan membuang data GPS
+printf 'upload_max_filesize = 4M\npost_max_size = 8M\n' > /etc/php/8.4/fpm/conf.d/99-tkj.ini
+systemctl restart php8.4-fpm
+```
+
+Di blok `server { ... }` Nginx tambahkan `client_max_body_size 5m;` lalu `nginx -t && systemctl reload nginx`.
+Tanpa pengaturan ini, foto di atas 1 MB ditolak server dengan galat 413 sebelum sampai ke aplikasi.
+Batas aplikasi: JPG, PNG, atau WebP, maksimal 2 MB dan 16 megapiksel. Foto disimpan di `storage/app/public/content`,
+sudah termasuk dalam cadangan di bagian 9.
+
+Catatan privasi: nama siswa pada "Pengurus organisasi siswa" akan tampil di situs publik. Isi hanya jika ada izin.
+
+## 12. Catatan untuk server dengan frontend terpisah dan Cloudflare Tunnel
+
+- Debian 13 memakai PHP 8.4 (paket `php8.4-*`, soket `/run/php/php8.4-fpm.sock`). Aplikasi mendukung PHP 8.3 atau lebih baru.
+- Jika port 80 dipakai layanan lain (misalnya Apache), buat Nginx mendengarkan `127.0.0.1:8081`
+  dan arahkan Public Hostname Cloudflare Tunnel ke `http://localhost:8081`. HTTPS ditangani Cloudflare.
+- `.env` backend: `APP_URL=https://api.jarvar.web.id`, `TRUSTED_PROXIES=*` (hanya jika Nginx tidak terbuka ke internet),
+  `CORS_ALLOWED_ORIGINS=https://jarvar.web.id,https://www.jarvar.web.id`, dan `FRONTEND_URL=https://jarvar.web.id`
+  agar halaman publik Laravel dialihkan ke frontend (login, dashboard, admin, aktivasi, dan API tetap aktif).
+- Selama SMTP belum diatur, tautan aktivasi akun dapat dicetak dari terminal:
+  `php artisan tinker --execute='$u=App\Models\User::where("username","NAMA")->firstOrFail(); $s=app(App\Services\AccountActivationService::class); echo $s->url($s->issue($u)),"\n";'`
+  Tautan itu rahasia; jangan dibagikan di tempat umum.
