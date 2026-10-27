@@ -75,6 +75,15 @@ class UserPolicy
         return $this->update($actor, $target) && $target->is_active;
     }
 
+    /**
+     * Menghapus akun secara permanen. Akun super admin tidak dapat dihapus
+     * lewat aplikasi; admin hanya dapat dihapus oleh super admin.
+     */
+    public function delete(User $actor, User $target): bool
+    {
+        return $this->update($actor, $target) && ! $target->isSuperAdmin();
+    }
+
     public function reactivate(User $actor, User $target): bool
     {
         // Hanya akun yang pernah diaktivasi; akun yang belum aktivasi

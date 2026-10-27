@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\ItReport;
 use App\Models\Permission;
 use App\Models\User;
 use App\Services\AccountActivationService;
+use App\Services\ContentImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -181,6 +183,40 @@ class UserController extends Controller
         $this->revokeSessions($user);
 
         return back()->with('success', 'Akun dinonaktifkan dan semua sesi login dihentikan.');
+    }
+
+    /**
+     * Menghapus akun secara permanen. Wajib mengetik ulang username sebagai
+     * konfirmasi. Akun yang memiliki laporan IT tidak dihapus karena laporan
+     * harus tetap tercatat; akun tersebut cukup dinonaktifkan.
+     */
+    public function destroy(Request $request, User $user, ContentImageService $images): RedirectResponse
+    {
+        Gate::authorize('delete', $user);
+
+        $request->validate(['confirm_username' => ['required', 'string']]);
+
+        if (! hash_equals(Str::lower($user->username), Str::lower(trim((string) $request->input('confirm_username'))))) {
+            return back()->with('error', 'Username konfirmasi tidak cocok. Akun tidak dihapus.');
+        }
+
+        $reports = ItReport::where('user_id', $user->id)->count();
+        if ($reports > 0) {
+            return back()->with('error', "Akun ini memiliki {$reports} laporan IT yang harus tetap tercatat, jadi tidak dapat dihapus. Nonaktifkan akun ini sebagai gantinya.");
+        }
+
+        $name = $user->shownName();
+
+        DB::transaction(function () use ($user): void {
+            $this->revokeSessions($user);
+            $user->delete();
+        });
+
+        $images->delete($user->photo_path);
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', "Akun {$name} dihapus permanen.");
     }
 
     public function reactivate(User $user): RedirectResponse

@@ -150,3 +150,48 @@ Catatan privasi: nama siswa pada "Pengurus organisasi siswa" akan tampil di situ
 - Selama SMTP belum diatur, tautan aktivasi akun dapat dicetak dari terminal:
   `php artisan tinker --execute='$u=App\Models\User::where("username","NAMA")->firstOrFail(); $s=app(App\Services\AccountActivationService::class); echo $s->url($s->issue($u)),"\n";'`
   Tautan itu rahasia; jangan dibagikan di tempat umum.
+
+## 13. Memakai MariaDB
+
+Aplikasi mendukung MariaDB tanpa perubahan kode. Langkah di bawah ini aman: berkas SQLite tidak diubah atau dihapus,
+dan perintah penyalinan menolak berjalan bila database tujuan sudah berisi data. Catatan: jalur MariaDB ini diuji
+dengan SQLite sebagai pengganti; ujicoba pertama di server sebaiknya dilakukan di luar jam pakai.
+
+1. Pasang MariaDB dan buat database serta pengguna khusus (kata sandi diisi sendiri, jangan ditulis di dokumen ini):
+   ```bash
+   apt install -y mariadb-server php8.4-mysql
+   mysql -e "CREATE DATABASE tkj CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   mysql -e "CREATE USER 'tkj'@'localhost' IDENTIFIED BY 'ISI-SANDI-KUAT';"
+   mysql -e "GRANT ALL PRIVILEGES ON tkj.* TO 'tkj'@'localhost'; FLUSH PRIVILEGES;"
+   systemctl restart php8.4-fpm
+   ```
+2. Cadangkan data lama: `cp database/database.sqlite ~/backup/db-sebelum-mariadb.sqlite`.
+3. Siapkan pengaturan baru di `.env`, tetapi **jangan aktifkan dulu**: simpan nilai ini di catatan.
+   ```dotenv
+   DB_CONNECTION=mariadb
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=tkj
+   DB_USERNAME=tkj
+   DB_PASSWORD=...
+   ```
+4. Ubah `.env` ke nilai di atas, lalu: `php artisan config:clear && php artisan migrate --force` (membuat tabel kosong di MariaDB).
+5. Cek dulu tanpa menyalin: `php artisan tkj:copy-database --dry-run`. Lalu salin: `php artisan tkj:copy-database`.
+   Perintah ini membaca `database/database.sqlite`, menyalin semua tabel (kecuali sesi dan cache) dengan ID yang sama,
+   dan memverifikasi jumlah baris. Pengguna perlu login ulang karena sesi tidak dipindahkan.
+6. `php artisan config:cache && php artisan route:cache && php artisan view:cache`, lalu cek login admin dan halaman utama.
+7. Untuk kembali ke SQLite: kembalikan `DB_CONNECTION=sqlite` di `.env` dan jalankan `php artisan config:cache`.
+   Berkas SQLite lama tetap utuh; data yang dibuat setelah pindah ke MariaDB tidak ikut kembali.
+
+Cadangan harian MariaDB: `mysqldump --single-transaction tkj > ~/backup/tkj-$(date +%F).sql`.
+
+## 14. Akun: hapus pengguna dan profil
+
+- Admin dengan izin `manage_users` dapat menghapus siswa dan teknisi dari halaman detail pengguna; hanya super admin yang dapat
+  menghapus admin. Super admin tidak dapat dihapus lewat aplikasi. Menghapus wajib mengetik ulang username.
+- Akun yang memiliki laporan IT tidak dapat dihapus (laporan harus tetap tercatat); nonaktifkan saja. Saran yang pernah
+  dikirim tetap tersimpan tanpa nama pengirim.
+- Pemilik akun mengubah nama tampilan, email, dan foto sendiri (siswa dan teknisi di situs `jarvar.web.id`, teknisi dan admin
+  di dashboard `/akun`). Mengganti email wajib memasukkan kata sandi saat ini. Nama resmi dan username hanya diubah admin.
+- Login admin (`api.jarvar.web.id`) dan login pengguna (`jarvar.web.id`) dipisahkan: siswa tidak dapat masuk dashboard, dan akun
+  admin tidak dapat dipakai di situs publik.

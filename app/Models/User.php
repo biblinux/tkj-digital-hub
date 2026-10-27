@@ -111,6 +111,14 @@ class User extends Authenticatable
         return ! in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN], true);
     }
 
+    /** URL foto profil, atau null bila belum ada. */
+    public function photoUrl(): ?string
+    {
+        return $this->photo_path
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->photo_path)
+            : null;
+    }
+
     public function roleLabel(): string
     {
         return self::ROLES[$this->role] ?? (string) $this->role;

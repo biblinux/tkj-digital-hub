@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountActivationController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\NewsController;
@@ -75,6 +76,12 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+    // Akun saya (profil sendiri)
+    Route::get('/akun', [AccountController::class, 'edit'])->name('account.edit');
+    Route::post('/akun', [AccountController::class, 'update'])->middleware('throttle:10,1,account')->name('account.update');
+    Route::post('/akun/foto', [AccountController::class, 'photo'])->middleware('throttle:10,1,account')->name('account.photo');
+    Route::post('/akun/foto/hapus', [AccountController::class, 'removePhoto'])->middleware('throttle:10,1,account')->name('account.photo.remove');
+
     // Laporan masalah IT
     Route::get('/laporan', [ItReportController::class, 'index'])->name('reports.index');
     Route::get('/laporan/buat', [ItReportController::class, 'create'])->name('reports.create');
@@ -121,6 +128,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/{user}', [UserController::class, 'show'])->whereNumber('user')->name('show');
         Route::get('/{user}/edit', [UserController::class, 'edit'])->whereNumber('user')->name('edit');
         Route::put('/{user}', [UserController::class, 'update'])->whereNumber('user')->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->whereNumber('user')->name('destroy');
         Route::post('/{user}/deactivate', [UserController::class, 'deactivate'])->whereNumber('user')->name('deactivate');
         Route::post('/{user}/reactivate', [UserController::class, 'reactivate'])->whereNumber('user')->name('reactivate');
         Route::post('/{user}/resend-activation', [UserController::class, 'resendActivation'])->whereNumber('user')->name('resend');

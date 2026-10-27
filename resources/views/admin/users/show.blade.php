@@ -60,6 +60,22 @@
         </div>
     </section>
 
+    @can('delete', $user)
+        <section class="card" style="margin-top:20px;border-color:#c0392b">
+            <h2 style="margin-top:0">Hapus akun permanen</h2>
+            <p>Menghapus akun tidak dapat dibatalkan. Akun yang memiliki laporan IT tidak dapat dihapus; nonaktifkan saja.
+                Untuk melanjutkan, ketik username <strong>{{ $user->username }}</strong>.</p>
+            <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                  onsubmit="return confirm('Hapus akun ini secara permanen?')">
+                @csrf
+                @method('DELETE')
+                <label for="confirm_username">Ketik username untuk konfirmasi</label>
+                <input id="confirm_username" name="confirm_username" type="text" required autocomplete="off" maxlength="255">
+                <div style="margin-top:14px"><button class="btn danger" type="submit">Hapus akun permanen</button></div>
+            </form>
+        </section>
+    @endcan
+
     @can('managePermissions', $user)
         <section class="card" style="margin-top:20px">
             <h2 style="margin-top:0">Izin admin</h2>
