@@ -55,9 +55,8 @@ class ActivationTest extends TestCase
         $this->assertTrue(Hash::check(self::STRONG, $user->password));
         $this->assertNotNull($user->activation->used_at);
 
-        // Setelah aktivasi, pengguna dapat login.
-        $this->post('/login', ['login' => 'rina', 'password' => self::STRONG])
-            ->assertRedirect(route('dashboard'));
+        // Setelah aktivasi, siswa dapat login di situs publik (API), bukan di dashboard.
+        $this->postJson('/api/v1/auth/login', ['login' => 'rina', 'password' => self::STRONG])->assertOk();
     }
 
     public function test_database_stores_hash_not_raw_token(): void

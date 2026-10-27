@@ -41,10 +41,19 @@ class AuthController extends Controller
             return response()->json(['message' => 'Kredensial tidak valid atau akun belum aktif.'], 422);
         }
 
-        RateLimiter::clear($key);
-
         /** @var User $user */
         $user = User::query()->where($field, $login)->firstOrFail();
+
+        // Akun admin hanya dipakai di dashboard (api.jarvar.web.id), bukan di situs publik.
+        if (! $user->canUseFrontendLogin()) {
+            RateLimiter::hit($key, 60);
+
+            return response()->json([
+                'message' => 'Akun admin masuk lewat dashboard di api.jarvar.web.id, bukan di situs ini.',
+            ], 403);
+        }
+
+        RateLimiter::clear($key);
 
         [$token, $plain] = ApiToken::issueFor($user, $data['device_name'] ?? 'frontend');
 
