@@ -53,6 +53,18 @@ class AuthController extends Controller
             ]);
         }
 
+        // Dashboard hanya untuk staf. Akun siswa masuk lewat situs publik.
+        if (! $request->user()->canUseDashboardLogin()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            RateLimiter::hit($key, 60);
+
+            throw ValidationException::withMessages([
+                'login' => 'Halaman ini khusus admin dan teknisi. Akun siswa masuk lewat situs utama jarvar.web.id.',
+            ]);
+        }
+
         RateLimiter::clear($key);
 
         // Cegah session fixation.

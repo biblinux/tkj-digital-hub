@@ -6,8 +6,8 @@
 @section('content')
     <div class="center-page">
         <section class="card auth-card accent">
-            <h1>Masuk</h1>
-            <p class="lead">Masuk untuk mengakses layanan TKJ Digital Hub.</p>
+            <h1>Masuk Admin</h1>
+            <p class="lead">Dashboard pengelola TKJ Digital Hub, khusus admin dan teknisi.</p>
 
             <form method="POST" action="{{ route('login.store') }}">
                 @csrf
@@ -25,7 +25,7 @@
                 </div>
             </form>
 
-            <p class="hint" style="margin-top:16px">Akun dibuat oleh administrator. Anda akan menerima email aktivasi untuk membuat kata sandi.</p>
+            <p class="hint" style="margin-top:16px">Siswa tidak masuk di sini: gunakan tombol Masuk di situs utama jarvar.web.id. Akun dibuat oleh administrator dan diaktifkan lewat tautan aktivasi.</p>
         </section>
     </div>
 @endsection

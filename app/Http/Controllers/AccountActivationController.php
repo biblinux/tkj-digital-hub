@@ -64,6 +64,6 @@ class AccountActivationController extends Controller
 
         return redirect()
             ->route('login')
-            ->with('success', 'Akun berhasil diaktifkan. Silakan login.');
+            ->with('success', 'Akun berhasil diaktifkan. Admin dan teknisi masuk di halaman ini; siswa masuk lewat tombol Masuk di situs utama jarvar.web.id.');
     }
 }

@@ -317,4 +317,23 @@ class ApiTest extends TestCase
         $res = $this->getJson('/api/v1/me', ['Authorization' => 'Bearer '.str_repeat('b', 64)])->assertStatus(401);
         $this->assertStringNotContainsString('vendor/', $res->getContent());
     }
+
+    public function test_admin_accounts_cannot_get_frontend_tokens(): void
+    {
+        foreach ([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN] as $i => $role) {
+            $user = $this->makeUser($role, true, ['username' => 'adm'.$i]);
+
+            $this->postJson('/api/v1/auth/login', ['login' => 'adm'.$i, 'password' => 'password'])
+                ->assertForbidden()
+                ->assertJsonMissingPath('token');
+            $this->assertDatabaseMissing('api_tokens', ['user_id' => $user->id]);
+        }
+    }
+
+    public function test_technician_can_still_use_frontend_login(): void
+    {
+        $this->makeUser(User::ROLE_TECHNICIAN, true, ['username' => 'tek']);
+
+        $this->postJson('/api/v1/auth/login', ['login' => 'tek', 'password' => 'password'])->assertOk();
+    }
 }

@@ -13,7 +13,7 @@ class AuthTest extends TestCase
 
     private function user(array $attrs = [], bool $active = true): User
     {
-        return $this->makeUser(User::ROLE_STUDENT, $active, $attrs + [
+        return $this->makeUser(User::ROLE_TECHNICIAN, $active, $attrs + [
             'username' => 'budi',
             'email' => 'budi@example.com',
             'password' => Hash::make('Rahasia-Kuat-2026!'),
@@ -132,5 +132,27 @@ class AuthTest extends TestCase
             ->implode(' ');
 
         $this->assertMatchesRegularExpression('/Forgery|Csrf/i', $middleware);
+    }
+
+    public function test_student_cannot_use_dashboard_login(): void
+    {
+        $this->makeUser(User::ROLE_STUDENT, true, ['username' => 'siswa', 'password' => Hash::make('Rahasia-Kuat-2026!')]);
+
+        $this->post('/login', ['login' => 'siswa', 'password' => 'Rahasia-Kuat-2026!'])
+            ->assertSessionHasErrors('login');
+
+        $this->assertGuest();
+    }
+
+    public function test_admin_and_technician_can_use_dashboard_login(): void
+    {
+        foreach ([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, User::ROLE_TECHNICIAN] as $i => $role) {
+            $this->makeUser($role, true, ['username' => 'staf'.$i, 'password' => Hash::make('Rahasia-Kuat-2026!')]);
+
+            $this->post('/login', ['login' => 'staf'.$i, 'password' => 'Rahasia-Kuat-2026!'])
+                ->assertRedirect(route('dashboard'));
+            $this->assertAuthenticated();
+            $this->post('/logout');
+        }
     }
 }

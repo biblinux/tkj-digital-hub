@@ -99,6 +99,18 @@ class User extends Authenticatable
         return $this->role === self::ROLE_STUDENT;
     }
 
+    /** Login dashboard (api.jarvar.web.id): hanya staf, bukan siswa. */
+    public function canUseDashboardLogin(): bool
+    {
+        return $this->role !== self::ROLE_STUDENT;
+    }
+
+    /** Login situs publik (jarvar.web.id): akun admin tidak dipakai di sini. */
+    public function canUseFrontendLogin(): bool
+    {
+        return ! in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN], true);
+    }
+
     public function roleLabel(): string
     {
         return self::ROLES[$this->role] ?? (string) $this->role;

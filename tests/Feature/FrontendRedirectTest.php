@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class FrontendRedirectTest extends TestCase
     {
         config(['tkj.frontend_url' => 'https://jarvar.web.id']);
 
-        foreach (['/', '/profil', '/kompetensi', '/kepengurusan', '/tim-it', '/topologi', '/galeri', '/fasilitas', '/kontak', '/saran'] as $url) {
+        foreach (['/profil', '/kompetensi', '/kepengurusan', '/tim-it', '/topologi', '/galeri', '/fasilitas', '/kontak', '/saran'] as $url) {
             $this->get($url)->assertRedirect('https://jarvar.web.id/');
         }
     }
@@ -38,7 +39,7 @@ class FrontendRedirectTest extends TestCase
     {
         config(['tkj.frontend_url' => 'https://jarvar.web.id']);
 
-        $this->get('/?next=https://situs-jahat.example')->assertRedirect('https://jarvar.web.id/');
+        $this->get('/profil?next=https://situs-jahat.example')->assertRedirect('https://jarvar.web.id/');
     }
 
     public function test_login_admin_activation_and_api_are_not_redirected(): void
@@ -58,5 +59,15 @@ class FrontendRedirectTest extends TestCase
         $this->post('/saran', ['subject' => 'Tambah komputer', 'message' => 'Mohon tambah komputer di lab 1.'])
             ->assertRedirect('/saran');
         $this->assertDatabaseCount('suggestions', 1);
+    }
+
+    public function test_root_goes_to_admin_login_for_guests_and_dashboard_for_staff(): void
+    {
+        config(['tkj.frontend_url' => 'https://jarvar.web.id']);
+
+        $this->get('/')->assertRedirect(route('login'));
+        $this->get('/?next=https://situs-jahat.example')->assertRedirect(route('login'));
+
+        $this->actingAs($this->makeUser(User::ROLE_ADMIN))->get('/')->assertRedirect(route('dashboard'));
     }
 }

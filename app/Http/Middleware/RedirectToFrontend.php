@@ -21,6 +21,12 @@ class RedirectToFrontend
             return $next($request);
         }
 
+        // Alamat dasar server ini (api.jarvar.web.id) adalah pintu dashboard admin:
+        // tamu diarahkan ke halaman login admin, yang sudah masuk ke dashboard.
+        if ($request->path() === '/') {
+            return redirect()->route($request->user() ? 'dashboard' : 'login');
+        }
+
         // Alamat tujuan tetap dari konfigurasi, bukan dari input pengguna,
         // sehingga tidak bisa dipakai sebagai open redirect.
         return redirect()->away(rtrim($frontend, '/').'/', 302);
