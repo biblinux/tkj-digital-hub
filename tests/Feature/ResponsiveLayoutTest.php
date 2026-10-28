@@ -26,7 +26,7 @@ class ResponsiveLayoutTest extends TestCase
     {
         $css = file_get_contents(public_path('css/tkj.css'));
 
-        $this->assertStringContainsString('@media (max-width: 820px)', $css);
+        $this->assertStringContainsString('@media (max-width: 960px)', $css);
         $this->assertStringContainsString('@media (max-width: 640px)', $css);
         $this->assertStringContainsString('table.stack', $css);
         $this->assertStringContainsString('attr(data-label)', $css);
