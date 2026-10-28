@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ItReportController;
 use App\Http\Controllers\Api\MetaController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,11 @@ Route::prefix('v1')->name('api.')->group(function () {
     Route::middleware(['api.auth', 'throttle:60,1'])->group(function () {
         Route::get('/me', [AuthController::class, 'me'])->name('me');
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::post('/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1,profile')->name('profile.update');
+        Route::post('/profile/photo', [ProfileController::class, 'photo'])->middleware('throttle:10,1,profile')->name('profile.photo');
+        Route::post('/profile/photo/remove', [ProfileController::class, 'removePhoto'])->middleware('throttle:10,1,profile')->name('profile.photo.remove');
 
         Route::get('/reports', [ItReportController::class, 'index'])->name('reports.index');
         Route::post('/reports', [ItReportController::class, 'store'])

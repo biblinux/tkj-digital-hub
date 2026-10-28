@@ -66,7 +66,7 @@
                 @endif
 
                 @auth
-                    <span class="who">{{ $user->shownName() }}</span>
+                    <a class="plain who" href="{{ route('account.edit') }}" @if (request()->routeIs('account.*')) aria-current="page" @endif>{{ $user->shownName() }}</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="link">Keluar</button>

@@ -129,3 +129,19 @@ await api('/api/v1/reports', { method: 'POST', token, body: { category: 'network
 
 Simpan token di `sessionStorage` (hilang saat tab ditutup), bukan di kode atau URL. Tampilkan semua teks dari
 API dengan `textContent`, jangan `innerHTML`, supaya tidak ada celah XSS.
+
+## Profil sendiri
+
+Semua endpoint di bawah ini memakai `Authorization: Bearer <token>` dan hanya menyentuh akun pemilik token.
+
+| Metode | Path | Isi |
+|---|---|---|
+| GET | `/api/v1/profile` | Data profil: `name`, `display_name`, `shown_name`, `username`, `email`, `role`, `photo_url` |
+| POST | `/api/v1/profile` | JSON `{display_name, email, current_password}`. `current_password` wajib hanya bila email berubah |
+| POST | `/api/v1/profile/photo` | `multipart/form-data` dengan kolom `photo` (JPG, PNG, atau WebP, maksimal 2 MB) |
+| POST | `/api/v1/profile/photo/remove` | Menghapus foto profil |
+
+Nama resmi (`name`), username, peran, dan status akun tidak dapat diubah lewat endpoint ini; hanya admin yang mengubahnya.
+Foto disimpan ulang di server (metadata dan lokasi GPS dibuang) dengan nama acak. Batas: 10 permintaan per menit.
+
+Akun admin dan super admin tidak dapat memperoleh token API (HTTP 403); mereka masuk lewat dashboard.
