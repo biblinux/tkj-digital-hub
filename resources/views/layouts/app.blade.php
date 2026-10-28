@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
-    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}">
+    <script>document.documentElement.classList.add('js')</script>
+    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}?v=3">
 </head>
 @php
     $frontend = config('tkj.frontend_url');
@@ -55,7 +56,7 @@
 
             <nav class="header-actions" aria-label="Navigasi utama">
                 @if ($frontend)
-                    <a class="plain" href="{{ $frontend }}" rel="noopener">Lihat situs</a>
+                    <a class="plain site-link" href="{{ $frontend }}" rel="noopener">Lihat situs</a>
                 @else
                     <a class="plain" href="{{ route('home') }}" @if (request()->routeIs('home')) aria-current="page" @endif>Beranda</a>
                     <a class="plain" href="{{ route('pages.profile') }}" @if (request()->routeIs('pages.profile')) aria-current="page" @endif>Profil</a>
@@ -78,11 +79,21 @@
         </div>
 
         @if ($adminLinks)
+            @php($currentLabel = collect($adminLinks)->first(fn ($l) => $l[2])[0] ?? 'Menu')
             <nav class="admin-nav" aria-label="Menu pengelolaan">
-                <ul class="container">
+                <div class="container menu-bar">
+                    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="admin-menu">
+                        <span>Menu: <strong>{{ $currentLabel }}</strong></span>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                </div>
+                <ul class="container" id="admin-menu">
                     @foreach ($adminLinks as [$label, $href, $active])
                         <li><a href="{{ $href }}" @if ($active) aria-current="page" @endif>{{ $label }}</a></li>
                     @endforeach
+                    @if ($frontend)
+                        <li class="menu-extra"><a href="{{ $frontend }}" rel="noopener">Lihat situs</a></li>
+                    @endif
                 </ul>
             </nav>
         @endif
@@ -114,5 +125,28 @@
             @endif
         </div>
     </footer>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('.menu-toggle'), menu = document.getElementById('admin-menu');
+            if (toggle && menu) {
+                toggle.addEventListener('click', function () {
+                    var open = toggle.getAttribute('aria-expanded') !== 'true';
+                    toggle.setAttribute('aria-expanded', String(open));
+                    menu.classList.toggle('is-open', open);
+                });
+            }
+            // Tabel menjadi kartu di layar kecil: setiap sel diberi label dari judul kolomnya.
+            document.querySelectorAll('.table-wrap table').forEach(function (table) {
+                var heads = [].map.call(table.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); });
+                table.querySelectorAll('tbody tr').forEach(function (row) {
+                    [].forEach.call(row.children, function (cell, i) {
+                        if (heads[i] && !cell.hasAttribute('colspan')) { cell.setAttribute('data-label', heads[i]); }
+                    });
+                });
+                table.classList.add('stack');
+            });
+        })();
+    </script>
 </body>
 </html>
