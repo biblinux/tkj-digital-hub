@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\OrgMemberController;
+use App\Http\Controllers\Admin\ProjectModerationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -117,6 +118,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('facilities', FacilityController::class)->except('show');
         Route::resource('organization', OrgMemberController::class)->except('show')
             ->parameters(['organization' => 'member']);
+
+        // Proyek siswa: tinjau, setujui, tolak, hapus
+        Route::get('projects', [ProjectModerationController::class, 'index'])->name('projects.index');
+        Route::get('projects/{project}', [ProjectModerationController::class, 'show'])->whereNumber('project')->name('projects.show');
+        Route::post('projects/{project}/approve', [ProjectModerationController::class, 'approve'])->whereNumber('project')->name('projects.approve');
+        Route::post('projects/{project}/reject', [ProjectModerationController::class, 'reject'])->whereNumber('project')->name('projects.reject');
+        Route::delete('projects/{project}', [ProjectModerationController::class, 'destroy'])->whereNumber('project')->name('projects.destroy');
     });
 
     // Manajemen pengguna: otorisasi lewat UserPolicy di controller,

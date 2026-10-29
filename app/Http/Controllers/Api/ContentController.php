@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\NewsPost;
 use App\Models\OrgMember;
+use App\Models\StudentProject;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -59,10 +60,25 @@ class ContentController extends Controller
 
         $head = ($members['head'] ?? collect())->first();
 
+        $projects = StudentProject::query()->visible()->with('user:id,name,display_name')
+            ->orderByDesc('reviewed_at')->orderByDesc('id')
+            ->limit(100)->get()
+            ->map(fn (StudentProject $p) => [
+                'id' => $p->id,
+                'title' => $p->title,
+                'text' => $p->description,
+                'tech' => $p->tech ?? [],
+                'result' => $p->result,
+                'link' => $p->link_url,
+                'image' => $p->imageUrl(),
+                'author' => $p->user?->shownName(),
+            ])->values();
+
         return response()
             ->json([
                 'news' => $news,
                 'gallery' => $gallery,
+                'projects' => $projects,
                 'facilities' => $facilities,
                 'org' => [
                     'head' => $head ? $person($head) : null,

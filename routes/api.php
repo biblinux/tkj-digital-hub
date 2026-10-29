@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ItReportController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,11 @@ Route::prefix('v1')->name('api.')->group(function () {
         Route::post('/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1,profile')->name('profile.update');
         Route::post('/profile/photo', [ProfileController::class, 'photo'])->middleware('throttle:10,1,profile')->name('profile.photo');
         Route::post('/profile/photo/remove', [ProfileController::class, 'removePhoto'])->middleware('throttle:10,1,profile')->name('profile.photo.remove');
+
+        Route::get('/projects/mine', [ProjectController::class, 'mine'])->name('projects.mine');
+        Route::post('/projects', [ProjectController::class, 'store'])->middleware('throttle:8,60,project-create')->name('projects.store');
+        Route::post('/projects/{project}', [ProjectController::class, 'update'])->whereNumber('project')->middleware('throttle:30,60,project-edit')->name('projects.update');
+        Route::post('/projects/{project}/delete', [ProjectController::class, 'destroy'])->whereNumber('project')->middleware('throttle:30,60,project-edit')->name('projects.destroy');
 
         Route::get('/reports', [ItReportController::class, 'index'])->name('reports.index');
         Route::post('/reports', [ItReportController::class, 'store'])

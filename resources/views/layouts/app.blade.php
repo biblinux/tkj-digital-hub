@@ -27,6 +27,8 @@
             $adminLinks[] = ['Galeri', route('admin.gallery.index'), request()->routeIs('admin.gallery.*')];
             $adminLinks[] = ['Fasilitas', route('admin.facilities.index'), request()->routeIs('admin.facilities.*')];
             $adminLinks[] = ['Struktur dan Tim', route('admin.organization.index'), request()->routeIs('admin.organization.*')];
+            $pendingProjects = \App\Models\StudentProject::where('status', 'pending')->count();
+            $adminLinks[] = ['Proyek Siswa'.($pendingProjects ? " ({$pendingProjects})" : ''), route('admin.projects.index'), request()->routeIs('admin.projects.*')];
         }
         if ($can('manage_suggestions')) {
             $adminLinks[] = ['Saran', route('admin.suggestions.index'), request()->routeIs('admin.suggestions.*')];

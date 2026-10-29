@@ -99,6 +99,11 @@ class User extends Authenticatable
         return $this->role === self::ROLE_STUDENT;
     }
 
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentProject::class);
+    }
+
     /** Login dashboard (api.jarvar.web.id): hanya staf, bukan siswa. */
     public function canUseDashboardLogin(): bool
     {

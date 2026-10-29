@@ -206,6 +206,7 @@ class UserController extends Controller
         }
 
         $name = $user->shownName();
+        $projectImages = $user->projects()->whereNotNull('image_path')->pluck('image_path');
 
         DB::transaction(function () use ($user): void {
             $this->revokeSessions($user);
@@ -213,6 +214,7 @@ class UserController extends Controller
         });
 
         $images->delete($user->photo_path);
+        $projectImages->each(fn ($path) => $images->delete($path));
 
         return redirect()
             ->route('admin.users.index')
