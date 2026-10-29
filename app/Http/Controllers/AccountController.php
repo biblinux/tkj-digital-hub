@@ -21,7 +21,7 @@ class AccountController extends Controller
 
     public function update(UpdateProfileRequest $request): RedirectResponse
     {
-        $this->profiles->updateDetails($request->user(), $request->input('display_name'), $request->input('email'));
+        $this->profiles->updateDetails($request->user(), $request->validated() + ($request->has('show_in_directory') ? ['show_in_directory' => $request->boolean('show_in_directory')] : []));
 
         return redirect()->route('account.edit')->with('success', 'Profil diperbarui.');
     }

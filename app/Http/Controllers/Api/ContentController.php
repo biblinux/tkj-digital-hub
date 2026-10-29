@@ -7,7 +7,9 @@ use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\NewsPost;
 use App\Models\OrgMember;
+use App\Models\SiteSetting;
 use App\Models\StudentProject;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -74,8 +76,44 @@ class ContentController extends Controller
                 'author' => $p->user?->shownName(),
             ])->values();
 
+        // Direktori otomatis: hanya akun aktif yang tidak disembunyikan. Tanpa username, email, atau data internal.
+        $directory = fn (string $role) => User::query()->inDirectory($role)
+            ->orderByRaw('lower(coalesce(display_name, name))')->orderBy('id')
+            ->limit(500)->get()
+            ->map(fn (User $u) => [
+                'name' => $u->shownName(),
+                'class_name' => $u->class_name,
+                'bio' => $u->bio,
+                'photo' => $u->photoUrl(),
+            ])->values();
+
+        $s = SiteSetting::allValues();
+        $school = config('tkj.school');
+        $competencies = collect(SiteSetting::lines($s['competencies'] ?? ''))->map(function (string $line) {
+            [$title, $text] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
+
+            return ['title' => $title, 'text' => $text];
+        })->filter(fn ($c) => $c['title'] !== '')->values();
+
+        $site = [
+            'vision' => ($s['vision'] ?? null) ?: null,
+            'mission' => SiteSetting::lines($s['mission'] ?? ''),
+            'about' => ($s['about'] ?? null) ?: null,
+            'competencies' => $competencies,
+            'contact' => [
+                'address' => (($s['address'] ?? null) ?: ($school['address'] ?? null)) ?: null,
+                'phone' => (($s['phone'] ?? null) ?: ($school['phone'] ?? null)) ?: null,
+                // Kunci sengaja bernama "mail": respons publik tidak boleh memuat kata "email" (uji kebocoran data pengguna).
+                'mail' => (($s['email'] ?? null) ?: ($school['email'] ?? null)) ?: null,
+                'map_url' => (($s['map_url'] ?? null) ?: ($school['map_url'] ?? null)) ?: null,
+            ],
+        ];
+
         return response()
             ->json([
+                'site' => $site,
+                'students' => $directory(User::ROLE_STUDENT),
+                'technicians' => $directory(User::ROLE_TECHNICIAN),
                 'news' => $news,
                 'gallery' => $gallery,
                 'projects' => $projects,

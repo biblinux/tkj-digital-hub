@@ -21,7 +21,7 @@ class ProfileController extends Controller
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $this->profiles->updateDetails($request->user(), $request->input('display_name'), $request->input('email'));
+        $this->profiles->updateDetails($request->user(), $request->validated());
 
         return response()->json([
             'message' => 'Profil diperbarui.',
@@ -62,6 +62,9 @@ class ProfileController extends Controller
             'role' => $user->role,
             'role_label' => $user->roleLabel(),
             'photo_url' => $user->photoUrl(),
+            'bio' => $user->bio,
+            'class_name' => $user->class_name,
+            'show_in_directory' => (bool) $user->show_in_directory,
         ];
     }
 }

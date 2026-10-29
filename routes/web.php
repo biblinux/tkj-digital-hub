@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\OrgMemberController;
 use App\Http\Controllers\Admin\ProjectModerationController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -118,6 +119,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('facilities', FacilityController::class)->except('show');
         Route::resource('organization', OrgMemberController::class)->except('show')
             ->parameters(['organization' => 'member']);
+
+        // Profil jurusan (visi, misi, kontak)
+        Route::get('site', [SiteSettingController::class, 'edit'])->name('site.edit');
+        Route::put('site', [SiteSettingController::class, 'update'])->name('site.update');
 
         // Proyek siswa: tinjau, setujui, tolak, hapus
         Route::get('projects', [ProjectModerationController::class, 'index'])->name('projects.index');

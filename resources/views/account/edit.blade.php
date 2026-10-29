@@ -44,6 +44,19 @@
         <input id="display_name" name="display_name" type="text" maxlength="100" value="{{ old('display_name', $user->display_name) }}">
         @error('display_name')<p class="error">{{ $message }}</p>@enderror
 
+        <label for="class_name">Kelas (opsional)</label>
+        <input id="class_name" name="class_name" type="text" maxlength="30" value="{{ old('class_name', $user->class_name) }}">
+        @error('class_name')<p class="error">{{ $message }}</p>@enderror
+
+        <label for="bio">Bio singkat (opsional, maksimal 200 karakter)</label>
+        <textarea id="bio" name="bio" maxlength="200" style="min-height:90px">{{ old('bio', $user->bio) }}</textarea>
+        @error('bio')<p class="error">{{ $message }}</p>@enderror
+
+        @if ($user->isTechnician())
+            <input type="hidden" name="show_in_directory" value="0">
+            <label class="checkbox"><input type="checkbox" name="show_in_directory" value="1" @checked(old('show_in_directory', $user->show_in_directory))> Tampilkan profil saya di halaman Teknisi situs publik</label>
+        @endif
+
         <label for="email">Email</label>
         <input id="email" name="email" type="email" maxlength="255" required autocomplete="email" value="{{ old('email', $user->email) }}">
         @error('email')<p class="error">{{ $message }}</p>@enderror

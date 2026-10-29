@@ -6,11 +6,15 @@
     <title>@yield('title', config('tkj.name')) - {{ config('tkj.name') }}</title>
     <meta name="description" content="@yield('description', config('tkj.tagline'))">
     <meta name="theme-color" content="#C84F08">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('img/favicon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
     <script>document.documentElement.classList.add('js')</script>
-    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}?v=5">
 </head>
 @php
     $frontend = config('tkj.frontend_url');
@@ -26,6 +30,7 @@
             $adminLinks[] = ['Berita', route('admin.news.index'), request()->routeIs('admin.news.*')];
             $adminLinks[] = ['Galeri', route('admin.gallery.index'), request()->routeIs('admin.gallery.*')];
             $adminLinks[] = ['Fasilitas', route('admin.facilities.index'), request()->routeIs('admin.facilities.*')];
+            $adminLinks[] = ['Profil Jurusan', route('admin.site.edit'), request()->routeIs('admin.site.*')];
             $adminLinks[] = ['Struktur dan Tim', route('admin.organization.index'), request()->routeIs('admin.organization.*')];
             $pendingProjects = \App\Models\StudentProject::where('status', 'pending')->count();
             $adminLinks[] = ['Proyek Siswa'.($pendingProjects ? " ({$pendingProjects})" : ''), route('admin.projects.index'), request()->routeIs('admin.projects.*')];
@@ -49,7 +54,7 @@
     <header class="site-header">
         <div class="container header-bar">
             <a class="brand" href="{{ $user ? route('dashboard') : ($frontend ?: route('home')) }}">
-                <span class="brand-mark" aria-hidden="true">TKJ</span>
+                <img class="brand-logo" src="{{ asset('img/logo-tkj-128.png') }}" alt="" width="44" height="44">
                 <span class="brand-text">
                     <strong>{{ config('tkj.name') }}</strong>
                     <small>{{ config('tkj.school.name') ?: 'Teknik Komputer dan Jaringan' }}</small>
@@ -110,6 +115,10 @@
 
     <footer class="site-footer">
         <div class="container">
+            <div class="foot-logos">
+                <img src="{{ asset('img/logo-tkj-128.png') }}" alt="Logo TKJ" width="48" height="48" loading="lazy">
+                <img src="{{ asset('img/logo-sekolah-128.png') }}" alt="Logo SMK Negeri 1 Leuwimunding" width="48" height="48" loading="lazy">
+            </div>
             <p class="foot-brand">{{ config('tkj.name') }}</p>
             <p class="foot-line">
                 &copy; {{ now()->format('Y') }} Teknik Komputer dan Jaringan

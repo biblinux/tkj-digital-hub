@@ -16,10 +16,16 @@ class UpdateProfileRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
+        $merge = [
             'display_name' => trim((string) $this->input('display_name')),
             'email' => strtolower(trim((string) $this->input('email'))),
-        ]);
+        ];
+        foreach (['bio', 'class_name'] as $field) {
+            if ($this->has($field)) {
+                $merge[$field] = trim((string) $this->input($field));
+            }
+        }
+        $this->merge($merge);
     }
 
     public function rules(): array
@@ -27,6 +33,9 @@ class UpdateProfileRequest extends FormRequest
         return [
             'display_name' => ['nullable', 'string', 'max:100'],
             'email' => ['required', 'string', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($this->user()->id)],
+            'bio' => ['nullable', 'string', 'max:200'],
+            'class_name' => ['nullable', 'string', 'max:30'],
+            'show_in_directory' => ['sometimes', 'boolean'],
             'current_password' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -37,6 +46,8 @@ class UpdateProfileRequest extends FormRequest
             'email.unique' => 'Email ini sudah dipakai akun lain.',
             'email.email' => 'Format email tidak valid.',
             'email.required' => 'Email wajib diisi.',
+            'bio.max' => 'Bio maksimal 200 karakter.',
+            'class_name.max' => 'Kelas maksimal 30 karakter.',
         ];
     }
 

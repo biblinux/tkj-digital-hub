@@ -16,6 +16,10 @@
             <dt>Nama</dt><dd>{{ $user->name }}</dd>
             <dt>Username</dt><dd>{{ $user->username }}</dd>
             <dt>Email</dt><dd>{{ $user->email }}</dd>
+            @if ($user->class_name)<dt>Kelas</dt><dd>{{ $user->class_name }}</dd>@endif
+            @if ($user->isStudent() || $user->isTechnician())
+                <dt>Situs publik</dt><dd>{{ $user->show_in_directory ? 'Tampil di direktori' : 'Disembunyikan' }}</dd>
+            @endif
             <dt>Dibuat</dt><dd>{{ $user->created_at?->format('d-m-Y H:i') }}</dd>
             @if ($user->activation)
                 <dt>Aktivasi</dt>

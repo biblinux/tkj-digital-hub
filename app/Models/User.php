@@ -21,6 +21,9 @@ use Illuminate\Notifications\Notifiable;
     'display_name',
     'password',
     'photo_path',
+    'bio',
+    'class_name',
+    'show_in_directory',
     'two_factor_enabled',
 ])]
 #[Hidden(['password', 'remember_token'])]
@@ -104,6 +107,12 @@ class User extends Authenticatable
         return $this->hasMany(StudentProject::class);
     }
 
+    /** Siswa atau teknisi aktif yang tampil di situs publik. */
+    public function scopeInDirectory($query, string $role)
+    {
+        return $query->where('role', $role)->where('is_active', true)->where('show_in_directory', true);
+    }
+
     /** Login dashboard (api.jarvar.web.id): hanya staf, bukan siswa. */
     public function canUseDashboardLogin(): bool
     {
@@ -172,6 +181,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'two_factor_enabled' => 'boolean',
+            'show_in_directory' => 'boolean',
         ];
     }
 }

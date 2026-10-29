@@ -80,6 +80,7 @@ class UserController extends Controller
                 'username' => $validated['username'],
                 'email' => $validated['email'],
                 'display_name' => $validated['name'],
+                'class_name' => ($validated['class_name'] ?? null) ?: null,
                 // Kata sandi acak; pengguna menetapkan sendiri saat aktivasi.
                 'password' => Str::random(64),
             ]);
@@ -138,12 +139,21 @@ class UserController extends Controller
         DB::transaction(function () use ($validated, $user) {
             $previousRole = $user->role;
 
+            // Nama tampilan milik pengguna tidak ditimpa, kecuali masih sama dengan nama lama.
+            $followsName = ! $user->display_name || $user->display_name === $user->name;
+
             $user->fill([
                 'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $validated['email'],
-                'display_name' => $validated['name'],
+                'class_name' => ($validated['class_name'] ?? null) ?: null,
             ]);
+            if ($followsName) {
+                $user->display_name = $validated['name'];
+            }
+            if (array_key_exists('show_in_directory', $validated)) {
+                $user->show_in_directory = (bool) $validated['show_in_directory'];
+            }
 
             if (isset($validated['role'])) {
                 $user->role = $validated['role'];

@@ -13,11 +13,34 @@ class ProfileService
 {
     public function __construct(private ContentImageService $images) {}
 
-    public function updateDetails(User $user, ?string $displayName, string $email): void
+    /**
+     * @param  array{display_name?: ?string, email: string, bio?: ?string, class_name?: ?string, show_in_directory?: bool}  $data
+     */
+    public function updateDetails(User $user, array $data): void
     {
+        $displayName = $data['display_name'] ?? null;
         $user->display_name = ($displayName !== null && trim($displayName) !== '') ? trim($displayName) : null;
-        $user->email = strtolower(trim($email));
+        $user->email = strtolower(trim($data['email']));
+
+        // Kolom opsional hanya diubah bila memang dikirim, agar klien lama tidak menimpanya.
+        if (array_key_exists('bio', $data)) {
+            $user->bio = $this->clean($data['bio']);
+        }
+        if (array_key_exists('class_name', $data)) {
+            $user->class_name = $this->clean($data['class_name']);
+        }
+        if (array_key_exists('show_in_directory', $data)) {
+            $user->show_in_directory = (bool) $data['show_in_directory'];
+        }
+
         $user->save();
+    }
+
+    private function clean(?string $value): ?string
+    {
+        $value = $value === null ? null : trim($value);
+
+        return $value === '' ? null : $value;
     }
 
     public function setPhoto(User $user, UploadedFile $file): void

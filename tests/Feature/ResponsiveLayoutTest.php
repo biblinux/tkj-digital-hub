@@ -36,4 +36,16 @@ class ResponsiveLayoutTest extends TestCase
     {
         $this->get('/login')->assertOk()->assertDontSee('id="admin-menu"', false);
     }
+
+    public function test_layout_uses_the_logos_and_the_files_exist(): void
+    {
+        foreach (['img/logo-tkj-128.png', 'img/logo-sekolah-128.png', 'img/favicon-32.png', 'img/apple-touch-icon.png', 'favicon.ico'] as $file) {
+            $this->assertFileExists(public_path($file));
+        }
+
+        $this->get('/login')->assertOk()
+            ->assertSee('img/logo-tkj-128.png', false)
+            ->assertSee('img/logo-sekolah-128.png', false)
+            ->assertSee('rel="icon"', false);
+    }
 }

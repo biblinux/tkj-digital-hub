@@ -9,6 +9,15 @@
 <label for="email">Email</label>
 <input id="email" name="email" type="email" value="{{ old('email', $user?->email) }}" maxlength="255" required>
 
+<label for="class_name">Kelas (opsional)</label>
+<input id="class_name" name="class_name" type="text" value="{{ old('class_name', $user?->class_name) }}" maxlength="30">
+<p class="hint">Contoh: X TKJ 1. Tampil di direktori siswa.</p>
+
+@if ($user)
+    <input type="hidden" name="show_in_directory" value="0">
+    <label class="checkbox"><input type="checkbox" name="show_in_directory" value="1" @checked(old('show_in_directory', $user->show_in_directory))> Tampilkan di situs publik (direktori siswa atau teknisi)</label>
+@endif
+
 @if (! $user || ! $user->isSuperAdmin())
     <label for="role">Peran</label>
     <select id="role" name="role" required>

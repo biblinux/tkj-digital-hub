@@ -50,6 +50,7 @@ class StoreUserRequest extends FormRequest
                 'required',
                 Rule::in([User::ROLE_STUDENT, User::ROLE_TECHNICIAN, User::ROLE_ADMIN]),
             ],
+            'class_name' => ['nullable', 'string', 'max:30'],
         ];
     }
 

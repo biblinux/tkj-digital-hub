@@ -43,6 +43,8 @@ class UpdateUserRequest extends FormRequest
                 'required', 'email:rfc', 'max:255',
                 Rule::unique('users', 'email')->ignore($target->id),
             ],
+            'class_name' => ['nullable', 'string', 'max:30'],
+            'show_in_directory' => ['sometimes', 'boolean'],
         ];
 
         // Peran akun super admin tidak dapat diubah dari antarmuka.
