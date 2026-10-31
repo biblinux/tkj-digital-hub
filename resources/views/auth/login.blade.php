@@ -6,6 +6,10 @@
 @section('content')
     <div class="center-page">
         <section class="card auth-card accent">
+            <div class="auth-logos">
+                <img src="{{ asset('img/logo-tkj-128.png') }}" alt="Logo TKJ">
+                <img src="{{ asset('img/logo-smk-128.png') }}" alt="Logo SMK Negeri 1 Leuwimunding">
+            </div>
             <h1>Masuk Admin</h1>
             <p class="lead">Dashboard pengelola TKJ Digital Hub, khusus admin dan teknisi.</p>
 

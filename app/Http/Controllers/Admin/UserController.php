@@ -84,6 +84,7 @@ class UserController extends Controller
                 'password' => Str::random(64),
             ]);
             $user->role = $validated['role'];
+            $user->class_name = $validated['class_name'] ?? null;
             $user->is_active = false;
             $user->save();
 
@@ -149,6 +150,8 @@ class UserController extends Controller
                 $user->role = $validated['role'];
             }
 
+            $user->class_name = $validated['class_name'] ?? null;
+
             $user->save();
 
             if ($previousRole !== $user->role) {
@@ -207,12 +210,17 @@ class UserController extends Controller
 
         $name = $user->shownName();
 
+        $projectImages = $user->projects()->pluck('image_path')->filter()->all();
+
         DB::transaction(function () use ($user): void {
             $this->revokeSessions($user);
             $user->delete();
         });
 
         $images->delete($user->photo_path);
+        foreach ($projectImages as $path) {
+            $images->delete($path);
+        }
 
         return redirect()
             ->route('admin.users.index')

@@ -28,6 +28,10 @@ return [
     // Masa berlaku token API untuk frontend statis (menit). Bawaan: 7 hari.
     'api_token_ttl_minutes' => (int) env('API_TOKEN_TTL_MINUTES', 10080),
 
+    // Proyek siswa yang dikirim lewat situs: false = harus disetujui admin
+    // dulu sebelum tampil publik (disarankan); true = langsung tampil.
+    'project_auto_publish' => (bool) env('PROJECT_AUTO_PUBLISH', false),
+
     // Identitas sekolah. Isi lewat .env; kosong = ditampilkan sebagai "belum diisi".
     'school' => [
         'name' => env('SCHOOL_NAME'),

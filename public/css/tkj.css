@@ -78,6 +78,10 @@ a:hover { color: var(--orange-800); }
     display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 8px;
     background: var(--orange-600); color: #fff; font-weight: 800; font-size: .85rem; letter-spacing: .02em;
 }
+.brand-logo { width: 2.75rem; height: 2.75rem; object-fit: contain; flex: none; }
+.foot-logo { width: 2.25rem; height: 2.25rem; object-fit: contain; vertical-align: middle; margin-right: 8px; background: #fff; border-radius: 8px; padding: 2px; }
+.auth-logos { display: flex; justify-content: center; gap: 14px; margin-bottom: 8px; }
+.auth-logos img { width: 64px; height: 64px; object-fit: contain; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-text strong { font-size: 1.05rem; }
 .brand-text small { color: var(--ink-soft); font-size: .8rem; font-weight: 400; }

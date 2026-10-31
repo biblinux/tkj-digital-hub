@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\ProjectModerationController;
 use App\Http\Controllers\Admin\OrgMemberController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -112,6 +113,10 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // Pengelolaan konten website (berita, galeri, fasilitas, struktur organisasi).
     Route::middleware('permission:manage_site_content')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('projects', [ProjectModerationController::class, 'index'])->name('projects.index');
+        Route::get('projects/{project}', [ProjectModerationController::class, 'show'])->whereNumber('project')->name('projects.show');
+        Route::post('projects/{project}/review', [ProjectModerationController::class, 'review'])->whereNumber('project')->name('projects.review');
+        Route::delete('projects/{project}', [ProjectModerationController::class, 'destroy'])->whereNumber('project')->name('projects.destroy');
         Route::resource('news', NewsController::class)->except('show');
         Route::resource('gallery', GalleryController::class)->except('show');
         Route::resource('facilities', FacilityController::class)->except('show');

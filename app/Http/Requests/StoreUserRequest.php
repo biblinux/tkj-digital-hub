@@ -30,6 +30,7 @@ class StoreUserRequest extends FormRequest
             'name' => trim((string) $this->input('name')),
             'username' => strtolower(trim((string) $this->input('username'))),
             'email' => strtolower(trim((string) $this->input('email'))),
+            'class_name' => trim((string) $this->input('class_name')) ?: null,
         ]);
     }
 
@@ -46,6 +47,7 @@ class StoreUserRequest extends FormRequest
                 'required', 'email:rfc', 'max:255',
                 Rule::unique('users', 'email'),
             ],
+            'class_name' => ['nullable', 'string', 'max:30'],
             'role' => [
                 'required',
                 Rule::in([User::ROLE_STUDENT, User::ROLE_TECHNICIAN, User::ROLE_ADMIN]),
@@ -60,6 +62,7 @@ class StoreUserRequest extends FormRequest
             'username' => 'username',
             'email' => 'email',
             'role' => 'peran',
+            'class_name' => 'kelas',
         ];
     }
 }

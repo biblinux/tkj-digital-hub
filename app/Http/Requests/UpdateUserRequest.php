@@ -24,6 +24,7 @@ class UpdateUserRequest extends FormRequest
             'name' => trim((string) $this->input('name')),
             'username' => strtolower(trim((string) $this->input('username'))),
             'email' => strtolower(trim((string) $this->input('email'))),
+            'class_name' => trim((string) $this->input('class_name')) ?: null,
         ]);
     }
 
@@ -33,6 +34,7 @@ class UpdateUserRequest extends FormRequest
         $target = $this->route('user');
 
         $rules = [
+            'class_name' => ['nullable', 'string', 'max:30'],
             'name' => ['required', 'string', 'max:100'],
             'username' => [
                 'required', 'string', 'min:3', 'max:30',

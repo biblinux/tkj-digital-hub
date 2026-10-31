@@ -13,8 +13,12 @@ class ProfileService
 {
     public function __construct(private ContentImageService $images) {}
 
-    public function updateDetails(User $user, ?string $displayName, string $email): void
+    public function updateDetails(User $user, ?string $displayName, string $email, ?string $bio = null, ?bool $showInDirectory = null): void
     {
+        $user->bio = ($bio !== null && trim($bio) !== '') ? trim($bio) : null;
+        if ($showInDirectory !== null) {
+            $user->show_in_directory = $showInDirectory;
+        }
         $user->display_name = ($displayName !== null && trim($displayName) !== '') ? trim($displayName) : null;
         $user->email = strtolower(trim($email));
         $user->save();

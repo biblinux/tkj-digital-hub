@@ -9,6 +9,10 @@
 <label for="email">Email</label>
 <input id="email" name="email" type="email" value="{{ old('email', $user?->email) }}" maxlength="255" required>
 
+<label for="class_name">Kelas <span class="hint">(khusus siswa)</span></label>
+<input id="class_name" name="class_name" type="text" value="{{ old('class_name', $user?->class_name) }}" maxlength="30" placeholder="Contoh: XI TKJ 1">
+<p class="hint">Siswa yang aktif otomatis tampil di halaman Direktori Siswa dengan kelas ini.</p>
+
 @if (! $user || ! $user->isSuperAdmin())
     <label for="role">Peran</label>
     <select id="role" name="role" required>
