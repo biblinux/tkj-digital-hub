@@ -203,7 +203,7 @@ class ContentCmsTest extends TestCase
             'svg' => UploadedFile::fake()->createWithContent('x.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'),
             'php' => UploadedFile::fake()->createWithContent('shell.php', '<?php echo 1;'),
             'php-gambar' => UploadedFile::fake()->createWithContent('shell.jpg', '<?php system($_GET["c"]);'),
-            'besar' => UploadedFile::fake()->image('besar.jpg', 100, 100)->size(3000),
+            'besar' => UploadedFile::fake()->image('besar.jpg', 100, 100)->size(6000),
         ];
 
         foreach ($bad as $name => $file) {

@@ -9,8 +9,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
     <script>document.documentElement.classList.add('js')</script>
-    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/tkj.css') }}?v=5">
 </head>
 @php
     $frontend = config('tkj.frontend_url');
@@ -24,6 +26,7 @@
         $adminLinks[] = ['Dashboard', route('dashboard'), request()->routeIs('dashboard')];
         if ($can('manage_site_content')) {
             $adminLinks[] = ['Berita', route('admin.news.index'), request()->routeIs('admin.news.*')];
+            $adminLinks[] = ['Proyek Siswa', route('admin.projects.index'), request()->routeIs('admin.projects.*')];
             $adminLinks[] = ['Galeri', route('admin.gallery.index'), request()->routeIs('admin.gallery.*')];
             $adminLinks[] = ['Fasilitas', route('admin.facilities.index'), request()->routeIs('admin.facilities.*')];
             $adminLinks[] = ['Struktur dan Tim', route('admin.organization.index'), request()->routeIs('admin.organization.*')];
@@ -47,7 +50,7 @@
     <header class="site-header">
         <div class="container header-bar">
             <a class="brand" href="{{ $user ? route('dashboard') : ($frontend ?: route('home')) }}">
-                <span class="brand-mark" aria-hidden="true">TKJ</span>
+                <img class="brand-logo" src="{{ asset('img/logo-tkj-128.png') }}" alt="" width="44" height="44">
                 <span class="brand-text">
                     <strong>{{ config('tkj.name') }}</strong>
                     <small>{{ config('tkj.school.name') ?: 'Teknik Komputer dan Jaringan' }}</small>
@@ -108,7 +111,10 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p class="foot-brand">{{ config('tkj.name') }}</p>
+            <p class="foot-brand">
+                <img class="foot-logo" src="{{ asset('img/logo-smk-128.png') }}" alt="" width="36" height="36">
+                {{ config('tkj.name') }}
+            </p>
             <p class="foot-line">
                 &copy; {{ now()->format('Y') }} Teknik Komputer dan Jaringan
                 @if (config('tkj.school.name')) &middot; {{ config('tkj.school.name') }} @endif

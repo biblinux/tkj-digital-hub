@@ -7,6 +7,8 @@ use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\NewsPost;
 use App\Models\OrgMember;
+use App\Models\StudentProject;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -59,8 +61,37 @@ class ContentController extends Controller
 
         $head = ($members['head'] ?? collect())->first();
 
+        $projects = StudentProject::query()->visible()->with('user')
+            ->latest('id')->limit(100)->get()
+            ->map(fn (StudentProject $p) => [
+                'id' => $p->id,
+                'title' => $p->title,
+                'text' => $p->description,
+                'tech' => $p->techList(),
+                'result' => $p->result,
+                'link' => $p->link_url,
+                'image' => $p->imageUrl(),
+                'author' => $p->user?->shownName(),
+                'class_name' => $p->user?->class_name,
+            ])->values();
+
+        // Direktori siswa: hanya nama, kelas, bio singkat, dan foto. Tanpa
+        // email, username, atau data akun lain.
+        $students = User::query()->inDirectory()
+            ->orderByRaw('class_name is null')->orderBy('class_name')->orderBy('name')
+            ->limit(500)->get()
+            ->map(fn (User $u) => [
+                'id' => $u->id,
+                'name' => $u->shownName(),
+                'class_name' => $u->class_name,
+                'bio' => $u->bio,
+                'photo' => $u->photoUrl(),
+            ])->values();
+
         return response()
             ->json([
+                'projects' => $projects,
+                'students' => $students,
                 'news' => $news,
                 'gallery' => $gallery,
                 'facilities' => $facilities,

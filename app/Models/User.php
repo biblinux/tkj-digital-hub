@@ -56,6 +56,19 @@ class User extends Authenticatable
         'view_reports',
     ];
 
+    public function projects(): HasMany
+    {
+        return $this->hasMany(StudentProject::class);
+    }
+
+    /** Siswa aktif yang menampilkan profilnya di direktori siswa publik. */
+    public function scopeInDirectory($query)
+    {
+        return $query->where('role', self::ROLE_STUDENT)
+            ->where('is_active', true)
+            ->where('show_in_directory', true);
+    }
+
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -167,6 +180,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'two_factor_enabled' => 'boolean',
+            'show_in_directory' => 'boolean',
         ];
     }
 }

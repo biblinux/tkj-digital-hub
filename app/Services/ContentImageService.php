@@ -19,7 +19,7 @@ use Illuminate\Validation\ValidationException;
  */
 class ContentImageService
 {
-    public const MAX_KB = 2048;
+    public const MAX_KB = 5120;
 
     public const MAX_PIXELS = 16_000_000;
 

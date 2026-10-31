@@ -27,6 +27,8 @@ class UpdateProfileRequest extends FormRequest
         return [
             'display_name' => ['nullable', 'string', 'max:100'],
             'email' => ['required', 'string', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($this->user()->id)],
+            'bio' => ['nullable', 'string', 'max:300'],
+            'show_in_directory' => ['nullable', 'boolean'],
             'current_password' => ['nullable', 'string', 'max:255'],
         ];
     }

@@ -8,7 +8,8 @@
 <body style="margin:0;padding:24px;background-color:#f5f5f4;font-family:Arial,Helvetica,sans-serif;color:#292524;">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e7e5e4;">
         <div style="background:#ea580c;color:#ffffff;padding:20px 32px;">
-            <strong style="font-size:20px;">TKJ Digital Hub</strong>
+            <img src="{{ asset('img/logo-tkj-128.png') }}" alt="" width="36" height="36" style="vertical-align:middle;margin-right:10px;background:#fff;border-radius:8px;">
+            <strong style="font-size:20px;vertical-align:middle;">TKJ Digital Hub</strong>
         </div>
 
         <div style="padding:28px 32px;">

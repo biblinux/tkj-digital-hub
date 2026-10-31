@@ -137,7 +137,7 @@ class ProfileTest extends TestCase
             ->assertStatus(422)->assertJsonValidationErrors('photo');
         $this->postJson('/api/v1/profile/photo', ['photo' => UploadedFile::fake()->create('svg.svg', 10, 'image/svg+xml')], $this->headers($u))
             ->assertStatus(422)->assertJsonValidationErrors('photo');
-        $this->postJson('/api/v1/profile/photo', ['photo' => UploadedFile::fake()->image('big.jpg', 100, 100)->size(3000)], $this->headers($u))
+        $this->postJson('/api/v1/profile/photo', ['photo' => UploadedFile::fake()->image('big.jpg', 100, 100)->size(6000)], $this->headers($u))
             ->assertStatus(422)->assertJsonValidationErrors('photo');
         $this->postJson('/api/v1/profile/photo', [], $this->headers($u))
             ->assertStatus(422)->assertJsonValidationErrors('photo');

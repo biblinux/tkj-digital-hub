@@ -138,8 +138,16 @@ Semua endpoint di bawah ini memakai `Authorization: Bearer <token>` dan hanya me
 |---|---|---|
 | GET | `/api/v1/profile` | Data profil: `name`, `display_name`, `shown_name`, `username`, `email`, `role`, `photo_url` |
 | POST | `/api/v1/profile` | JSON `{display_name, email, current_password}`. `current_password` wajib hanya bila email berubah |
-| POST | `/api/v1/profile/photo` | `multipart/form-data` dengan kolom `photo` (JPG, PNG, atau WebP, maksimal 2 MB) |
+| POST | `/api/v1/profile/photo` | `multipart/form-data` dengan kolom `photo` (JPG, PNG, atau WebP, maksimal 5 MB) |
 | POST | `/api/v1/profile/photo/remove` | Menghapus foto profil |
+| GET | `/api/v1/projects` | Proyek milik akun yang masuk (semua status) |
+| POST | `/api/v1/projects` | Kirim proyek (multipart: title, description, technologies, result, link_url, image). Status awal `pending` kecuali `PROJECT_AUTO_PUBLISH=true` |
+| POST | `/api/v1/projects/{id}` | Ubah proyek milik sendiri (kembali ke `pending`) |
+| DELETE | `/api/v1/projects/{id}` | Hapus proyek milik sendiri |
+
+`GET /api/v1/content` kini juga memuat `projects` (yang sudah disetujui admin) dan `students`
+(siswa aktif yang menampilkan profil: nama, kelas, bio, foto; tanpa email/username).
+Profil (`POST /api/v1/profile`) menerima `bio` dan `show_in_directory`.
 
 Nama resmi (`name`), username, peran, dan status akun tidak dapat diubah lewat endpoint ini; hanya admin yang mengubahnya.
 Foto disimpan ulang di server (metadata dan lokasi GPS dibuang) dengan nama acak. Batas: 10 permintaan per menit.

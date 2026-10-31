@@ -134,7 +134,7 @@ systemctl restart php8.4-fpm
 
 Di blok `server { ... }` Nginx tambahkan `client_max_body_size 5m;` lalu `nginx -t && systemctl reload nginx`.
 Tanpa pengaturan ini, foto di atas 1 MB ditolak server dengan galat 413 sebelum sampai ke aplikasi.
-Batas aplikasi: JPG, PNG, atau WebP, maksimal 2 MB dan 16 megapiksel. Foto disimpan di `storage/app/public/content`,
+Batas aplikasi: JPG, PNG, atau WebP, maksimal 5 MB dan 16 megapiksel. Foto disimpan di `storage/app/public/content`,
 sudah termasuk dalam cadangan di bagian 9.
 
 Catatan privasi: nama siswa pada "Pengurus organisasi siswa" akan tampil di situs publik. Isi hanya jika ada izin.
@@ -195,3 +195,12 @@ Cadangan harian MariaDB: `mysqldump --single-transaction tkj > ~/backup/tkj-$(da
   di dashboard `/akun`). Mengganti email wajib memasukkan kata sandi saat ini. Nama resmi dan username hanya diubah admin.
 - Login admin (`api.jarvar.web.id`) dan login pengguna (`jarvar.web.id`) dipisahkan: siswa tidak dapat masuk dashboard, dan akun
   admin tidak dapat dipakai di situs publik.
+
+## Proyek siswa dan direktori siswa
+
+- Siswa yang sudah masuk di situs dapat mengirim proyek. Admin meninjau di dashboard menu **Proyek Siswa**
+  (setujui, tolak, atau hapus). Atur `PROJECT_AUTO_PUBLISH=true` di `.env` bila ingin langsung tampil.
+- Direktori Siswa terisi otomatis dari akun siswa yang **aktif**. Isi kolom **Kelas** saat admin membuat atau
+  mengubah pengguna. Siswa dapat menyembunyikan profilnya sendiri dari halaman Masuk.
+- Setelah `git pull`: `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`,
+  lalu `php artisan config:cache && php artisan route:cache && php artisan view:cache`.

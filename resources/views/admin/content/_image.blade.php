@@ -6,7 +6,7 @@
 @endif
 <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" @required($required && ! $item->image_path)>
 <p class="hint">
-    JPG, PNG, atau WebP, maksimal 2 MB (16 megapiksel).
+    JPG, PNG, atau WebP, maksimal 5 MB (16 megapiksel).
     @if (extension_loaded('gd'))
         Foto dikecilkan otomatis dan data lokasi (GPS) di dalamnya dibuang.
     @else
