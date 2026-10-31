@@ -204,3 +204,9 @@ Cadangan harian MariaDB: `mysqldump --single-transaction tkj > ~/backup/tkj-$(da
   mengubah pengguna. Siswa dapat menyembunyikan profilnya sendiri dari halaman Masuk.
 - Setelah `git pull`: `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`,
   lalu `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+
+## Berita dan galeri kiriman pengguna
+
+Pengguna yang masuk dapat mengirim berita dan foto galeri dari situs. Kiriman berstatus *menunggu* dan baru tampil publik
+setelah admin menyetujuinya di dashboard menu **Persetujuan**. Konten yang dibuat admin sendiri tidak berubah.
+Setelah `git pull` jalankan `php artisan migrate --force` (menambah kolom `review_status`, `review_note`, `submitted_by`).

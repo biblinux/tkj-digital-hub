@@ -26,10 +26,16 @@ class NewsPost extends Model
         return ['published_at' => 'date'];
     }
 
+    public function submitter(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
+    }
+
     /** Hanya yang berstatus terbit dan tanggal tayangnya sudah tiba. */
     public function scopeVisible(Builder $query): Builder
     {
         return $query->where('status', 'published')
+            ->where('review_status', 'approved')
             ->whereDate('published_at', '<=', now()->toDateString());
     }
 }

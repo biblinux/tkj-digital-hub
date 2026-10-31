@@ -24,7 +24,7 @@ class NewsController extends Controller
             'q' => ['nullable', 'string', 'max:100'],
         ]);
 
-        $items = NewsPost::query()
+        $items = NewsPost::query()->where('review_status', 'approved')
             ->when($filters['status'] ?? null, fn ($q, $s) => $q->where('status', $s))
             ->when($filters['q'] ?? null, function ($q, $term) {
                 $like = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term).'%';

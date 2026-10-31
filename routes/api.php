@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ItReportController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Controllers\Api\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,18 +18,18 @@ use Illuminate\Support\Facades\Route;
 | CSRF dan CORS tidak perlu mengizinkan kredensial.
 */
 Route::prefix('v1')->name('api.')->group(function () {
-    Route::get('/meta', MetaController::class)->middleware('throttle:60,1')->name('meta');
-    Route::get('/content', ContentController::class)->middleware('throttle:60,1')->name('content');
+    Route::get('/meta', MetaController::class)->middleware('throttle:60,1,a21')->name('meta');
+    Route::get('/content', ContentController::class)->middleware('throttle:60,1,a22')->name('content');
 
     Route::post('/suggestions', [SuggestionController::class, 'store'])
-        ->middleware('throttle:5,10')
+        ->middleware('throttle:5,10,a25')
         ->name('suggestions.store');
 
     Route::post('/auth/login', [AuthController::class, 'login'])
-        ->middleware('throttle:10,1')
+        ->middleware('throttle:10,1,a29')
         ->name('auth.login');
 
-    Route::middleware(['api.auth', 'throttle:60,1'])->group(function () {
+    Route::middleware(['api.auth', 'throttle:60,1,a32'])->group(function () {
         Route::get('/me', [AuthController::class, 'me'])->name('me');
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
@@ -42,16 +43,22 @@ Route::prefix('v1')->name('api.')->group(function () {
         Route::post('/projects/{project}', [ProjectController::class, 'update'])->whereNumber('project')->middleware('throttle:20,60,project')->name('projects.update');
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->whereNumber('project')->name('projects.destroy');
 
+        Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+        Route::post('/submissions/news', [SubmissionController::class, 'storeNews'])->middleware('throttle:10,60,submission')->name('submissions.news.store');
+        Route::post('/submissions/gallery', [SubmissionController::class, 'storeGallery'])->middleware('throttle:20,60,submission')->name('submissions.gallery.store');
+        Route::delete('/submissions/news/{id}', [SubmissionController::class, 'destroyNews'])->whereNumber('id')->name('submissions.news.destroy');
+        Route::delete('/submissions/gallery/{id}', [SubmissionController::class, 'destroyGallery'])->whereNumber('id')->name('submissions.gallery.destroy');
+
         Route::get('/reports', [ItReportController::class, 'index'])->name('reports.index');
         Route::post('/reports', [ItReportController::class, 'store'])
-            ->middleware('throttle:10,60')
+            ->middleware('throttle:10,60,a54')
             ->name('reports.store');
         Route::get('/reports/{report}', [ItReportController::class, 'show'])
             ->whereNumber('report')
             ->name('reports.show');
         Route::post('/reports/{report}/comments', [ItReportController::class, 'comment'])
             ->whereNumber('report')
-            ->middleware('throttle:20,10')
+            ->middleware('throttle:20,10,a61')
             ->name('reports.comment');
     });
 });

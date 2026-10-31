@@ -210,7 +210,11 @@ class UserController extends Controller
 
         $name = $user->shownName();
 
-        $projectImages = $user->projects()->pluck('image_path')->filter()->all();
+        $projectImages = array_merge(
+            $user->projects()->pluck('image_path')->filter()->all(),
+            \App\Models\NewsPost::where('submitted_by', $user->id)->pluck('image_path')->filter()->all(),
+            \App\Models\GalleryItem::where('submitted_by', $user->id)->pluck('image_path')->filter()->all(),
+        );
 
         DB::transaction(function () use ($user): void {
             $this->revokeSessions($user);

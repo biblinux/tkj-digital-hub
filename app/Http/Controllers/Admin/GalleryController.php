@@ -19,7 +19,7 @@ class GalleryController extends Controller
     public function index(): View
     {
         return view('admin.gallery.index', [
-            'items' => GalleryItem::query()->orderBy('sort_order')->orderByDesc('id')->paginate(24),
+            'items' => GalleryItem::query()->where('review_status', 'approved')->orderBy('sort_order')->orderByDesc('id')->paginate(24),
         ]);
     }
 

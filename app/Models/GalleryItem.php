@@ -19,6 +19,11 @@ class GalleryItem extends Model
 
     public function scopeVisible(Builder $query): Builder
     {
-        return $query->where('is_published', true);
+        return $query->where('is_published', true)->where('review_status', 'approved');
+    }
+
+    public function submitter(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
     }
 }

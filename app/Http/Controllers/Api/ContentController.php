@@ -19,7 +19,7 @@ class ContentController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        $news = NewsPost::query()->visible()
+        $news = NewsPost::query()->visible()->with('submitter')
             ->orderByDesc('published_at')->orderByDesc('id')
             ->limit(100)->get()
             ->map(fn (NewsPost $n) => [
@@ -30,15 +30,17 @@ class ContentController extends Controller
                 'summary' => $n->summary,
                 'body' => $n->body,
                 'image' => $n->imageUrl(),
+                'author' => $n->submitter?->shownName(),
             ])->values();
 
-        $gallery = GalleryItem::query()->visible()
+        $gallery = GalleryItem::query()->visible()->with('submitter')
             ->orderBy('sort_order')->orderByDesc('id')
             ->limit(100)->get()
             ->map(fn (GalleryItem $g) => [
                 'id' => $g->id,
                 'caption' => $g->caption,
                 'src' => $g->imageUrl(),
+                'author' => $g->submitter?->shownName(),
             ])->values();
 
         $facilities = Facility::query()->visible()

@@ -145,6 +145,11 @@ Semua endpoint di bawah ini memakai `Authorization: Bearer <token>` dan hanya me
 | POST | `/api/v1/projects/{id}` | Ubah proyek milik sendiri (kembali ke `pending`) |
 | DELETE | `/api/v1/projects/{id}` | Hapus proyek milik sendiri |
 
+| GET | `/api/v1/submissions` | Berita dan foto galeri kiriman akun yang masuk |
+| POST | `/api/v1/submissions/news` | Kirim berita (title, category, summary, body, image). Status `pending` sampai disetujui admin |
+| POST | `/api/v1/submissions/gallery` | Kirim foto galeri (caption, image wajib). Status `pending` |
+| DELETE | `/api/v1/submissions/{news\|gallery}/{id}` | Hapus kiriman milik sendiri |
+
 `GET /api/v1/content` kini juga memuat `projects` (yang sudah disetujui admin) dan `students`
 (siswa aktif yang menampilkan profil: nama, kelas, bio, foto; tanpa email/username).
 Profil (`POST /api/v1/profile`) menerima `bio` dan `show_in_directory`.
