@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saran dan Masukan | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Sampaikan saran untuk pengembangan jurusan TKJ.">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="../css/style.css?v=41">
+</head>
+<body data-root="../" data-page="saran">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <section class="page-head">
+      <div class="wrap">
+        <h1>Saran dan Masukan</h1>
+        <p>Sampaikan saran untuk pengembangan jurusan TKJ.</p>
+      </div>
+    </section>
+    <div class="page-body">
+      <div class="wrap">
+<div class="form-layout">
+          <div class="form-card">
+            <form id="form-saran" novalidate>
+              <div class="field">
+                <label for="nama">Nama <span class="hint">(opsional)</span></label>
+                <input class="input" id="nama" name="nama" type="text" maxlength="60" autocomplete="off" aria-describedby="err-nama">
+                <p class="field-error" id="err-nama"></p>
+              </div>
+              <div class="field">
+                <label for="kategori">Kategori</label>
+                <select class="select" id="kategori" name="kategori" data-options="suggestionCategories" aria-describedby="err-kategori"><option value="">Pilih kategori</option></select>
+                <p class="field-error" id="err-kategori"></p>
+              </div>
+              <div class="field">
+                <label for="pesan">Pesan <span class="hint">(10 sampai 500 karakter)</span></label>
+                <textarea class="textarea" id="pesan" name="pesan" maxlength="500" data-count="count-pesan" aria-describedby="err-pesan count-pesan"></textarea>
+                <p class="count" id="count-pesan"></p>
+                <p class="field-error" id="err-pesan"></p>
+              </div>
+              <div class="hp" aria-hidden="true"><label>Jangan diisi<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Periksa dan kirim</button>
+                <button type="reset" class="btn btn--ghost">Kosongkan</button>
+              </div>
+              <div id="form-status" class="callout" role="status" hidden></div>
+            </form>
+          </div>
+          <div class="form-side">
+            <div class="callout callout--info"><p><strong>Tanpa login.</strong> Pesan Anda dikirim ke pengelola jurusan dan disimpan untuk ditindaklanjuti. Nama bersifat opsional.</p></div>
+            <div class="panel"><h2>Tips menulis saran</h2><p>Jelaskan hal yang ingin ditingkatkan dan alasannya. Jangan menuliskan data pribadi atau kata sandi.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/data.v41.js"></script>
+  <script src="../js/api.v41.js"></script>
+  <script src="../js/components.v41.js"></script>
+  <script src="../js/content.v41.js"></script>
+  <script src="../js/main.v41.js"></script>
+  <script src="../js/pages.v41.js"></script>
+</body>
+</html>

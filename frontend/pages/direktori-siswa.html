@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direktori Siswa | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Kartu siswa dengan pencarian dan filter kelas.">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="../css/style.css?v=41">
+</head>
+<body data-root="../" data-page="siswa">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <section class="page-head">
+      <div class="wrap">
+        <h1>Direktori Siswa</h1>
+        <p>Kartu siswa dengan pencarian dan filter kelas.</p>
+      </div>
+    </section>
+    <div class="page-body">
+      <div class="wrap">
+<div class="callout callout--info"><p><strong>Perlindungan data.</strong> Direktori hanya menampilkan nama, kelas, profil singkat, dan foto. Email, NISN, alamat rumah, nomor telepon, dan data sensitif tidak ditampilkan. Siswa dapat menyembunyikan profilnya lewat halaman Masuk.</p></div>
+        <div id="student-off" class="empty" hidden>
+          <h2>Direktori siswa belum ditampilkan</h2>
+          <p style="margin-inline:auto">Halaman ini dinonaktifkan sampai izin publikasi data siswa tersedia.</p>
+        </div>
+        <div id="student-tool">
+          <div class="toolbar">
+            <div class="field">
+              <label for="q">Cari siswa</label>
+              <input class="input" id="q" type="search" placeholder="Nama, kelas, atau profil" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="kelas">Kelas</label>
+              <select class="select" id="kelas"><option value="">Semua kelas</option></select>
+            </div>
+          </div>
+          <div class="form-actions" style="margin-bottom:1rem">
+            <p class="result-count" id="student-count" aria-live="polite" style="margin:0"></p>
+            <button type="button" class="btn btn--ghost btn--sm" id="student-reset">Atur ulang pencarian</button>
+          </div>
+          <div class="student-grid" id="student-grid"></div>
+          <div class="empty" id="student-empty" hidden><p style="margin-inline:auto">Tidak ada siswa yang cocok. Ubah kata kunci atau pilih Semua kelas.</p></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/data.v41.js"></script>
+  <script src="../js/api.v41.js"></script>
+  <script src="../js/components.v41.js"></script>
+  <script src="../js/content.v41.js"></script>
+  <script src="../js/main.v41.js"></script>
+  <script src="../js/pages.v41.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laporan Masalah IT | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Formulir untuk melaporkan masalah jaringan, komputer, Wi-Fi, atau perangkat lainnya.">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="../css/style.css?v=41">
+</head>
+<body data-root="../" data-page="laporan">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <section class="page-head">
+      <div class="wrap">
+        <h1>Laporan Masalah IT</h1>
+        <p>Formulir untuk melaporkan masalah jaringan, komputer, Wi-Fi, atau perangkat lainnya.</p>
+      </div>
+    </section>
+    <div class="page-body">
+      <div class="wrap">
+<div class="form-layout">
+          <div class="form-card" id="login-card" hidden>
+            <h2>Masuk untuk melapor</h2>
+            <p>Laporan dikaitkan dengan akun Anda agar dapat dilacak. Gunakan akun yang diberikan oleh admin jurusan.</p>
+            <form id="form-login" novalidate>
+              <div class="field">
+                <label for="login">Username atau email</label>
+                <input class="input" id="login" name="login" type="text" maxlength="255" autocomplete="username" aria-describedby="err-login">
+                <p class="field-error" id="err-login"></p>
+              </div>
+              <div class="field">
+                <label for="password">Kata sandi</label>
+                <input class="input" id="password" name="password" type="password" maxlength="255" autocomplete="current-password" aria-describedby="err-password">
+                <p class="field-error" id="err-password"></p>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Masuk</button>
+              </div>
+              <div class="callout" role="status" hidden></div>
+            </form>
+          </div>
+          <div class="form-card" id="report-card" hidden>
+            <p>Masuk sebagai <strong id="who"></strong>. <button type="button" class="btn btn--ghost btn--sm" id="btn-logout">Keluar</button></p>
+            <form id="form-laporan" novalidate>
+              <div class="field">
+                <label for="kategori">Kategori masalah</label>
+                <select class="select" id="kategori" name="kategori" data-options="problemCategories" aria-describedby="err-kategori"><option value="">Pilih kategori</option></select>
+                <p class="field-error" id="err-kategori"></p>
+              </div>
+              <div class="field">
+                <label for="lokasi">Lokasi umum</label>
+                <select class="select" id="lokasi" name="lokasi" data-options="locations" aria-describedby="err-lokasi"><option value="">Pilih lokasi</option></select>
+                <p class="field-error" id="err-lokasi"></p>
+              </div>
+              <div class="field">
+                <label for="deskripsi">Deskripsi masalah <span class="hint">(15 sampai 600 karakter)</span></label>
+                <textarea class="textarea" id="deskripsi" name="deskripsi" maxlength="600" data-count="count-deskripsi" aria-describedby="err-deskripsi count-deskripsi"></textarea>
+                <p class="count" id="count-deskripsi"></p>
+                <p class="field-error" id="err-deskripsi"></p>
+              </div>
+              <div class="field">
+                <fieldset aria-describedby="err-prioritas">
+                  <legend>Tingkat prioritas</legend>
+                  <div class="radio-row" data-radios="priorities" data-name="prioritas"></div>
+                </fieldset>
+                <p class="field-error" id="err-prioritas"></p>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Periksa dan kirim</button>
+                <button type="reset" class="btn btn--ghost">Kosongkan</button>
+              </div>
+              <div class="callout" role="status" hidden></div>
+            </form>
+          </div>
+          <div class="form-side">
+            <div class="callout callout--info"><p><strong>Wajib login.</strong> Setiap laporan mendapat nomor tiket dan diterima petugas. Status laporan dapat Anda pantau di halaman ini setelah masuk.</p></div>
+            <div class="panel">
+              <h2>Alur status</h2>
+              <p>Setiap laporan akan melalui status berikut:</p>
+              <ul class="steps"><li>Terbuka</li><li>Ditugaskan</li><li>Sedang dikerjakan</li><li>Selesai ditangani</li></ul>
+              <p style="margin-top:1rem">Laporan bersifat privat dan tidak ditampilkan kepada pengunjung umum. Jangan menuliskan kata sandi atau data pribadi pada deskripsi.</p>
+            </div>
+            <div class="panel" id="mine-panel" hidden style="margin-top:1rem">
+              <h2>Laporan saya</h2>
+              <ul class="my-reports" id="my-reports"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/data.v41.js"></script>
+  <script src="../js/api.v41.js"></script>
+  <script src="../js/components.v41.js"></script>
+  <script src="../js/content.v41.js"></script>
+  <script src="../js/main.v41.js"></script>
+  <script src="../js/pages.v41.js"></script>
+</body>
+</html>

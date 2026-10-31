@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beranda | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Website profil jurusan Teknik Komputer dan Jaringan SMKN 1 Leuwimunding.">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css?v=41">
+</head>
+<body data-root="">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1>Jurusan Teknik Komputer dan Jaringan SMKN 1 Leuwimunding</h1>
+          <p class="hero-lead">Belajar merancang jaringan, mengelola server, mengamankan sistem, dan merawat perangkat komputer melalui praktik langsung di laboratorium.</p>
+          <div class="hero-actions">
+            <a class="btn btn--primary" href="pages/profil.html">Lihat Profil TKJ</a>
+            <a class="btn btn--ghost" href="#kompetensi">Kompetensi Keahlian</a>
+          </div>
+        </div>
+        <figure class="hero-art" style="margin:0">
+          <svg class="topo" viewBox="0 0 480 350" role="img" aria-label="Ilustrasi topologi jaringan sederhana: internet terhubung ke router, switch, lalu server, dua komputer, dan access point">
+            <g fill="none" stroke="#F07A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path class="flow" d="M240 54V96"/>
+              <path class="flow" d="M240 130V176"/>
+              <path class="flow" d="M240 210V236H62V262"/>
+              <path class="flow" d="M240 210V236H170V262"/>
+              <path class="flow" d="M240 210V236H280V262"/>
+              <path class="flow" d="M240 210V236H390V262"/>
+            </g>
+            <rect x="170" y="12" width="140" height="42" rx="21" fill="#FFFFFF" stroke="#9AA1AB" stroke-width="2"/>
+            <text x="240" y="38" text-anchor="middle" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1B1F24">Internet</text>
+            <rect x="195" y="96" width="90" height="34" rx="7" fill="#C84F08"/>
+            <text class="node-label" x="240" y="118" text-anchor="middle">Router</text>
+            <rect x="150" y="176" width="180" height="34" rx="7" fill="#374151"/>
+            <text class="node-label" x="240" y="198" text-anchor="middle">Switch</text>
+            <rect x="18" y="262" width="88" height="48" rx="7" fill="#374151"/>
+            <text class="node-label" x="62" y="291" text-anchor="middle">Server</text>
+            <rect x="126" y="262" width="88" height="48" rx="7" fill="#374151"/>
+            <text class="node-label" x="170" y="291" text-anchor="middle">Komputer</text>
+            <rect x="236" y="262" width="88" height="48" rx="7" fill="#374151"/>
+            <text class="node-label" x="280" y="291" text-anchor="middle">Komputer</text>
+            <rect x="336" y="262" width="108" height="48" rx="7" fill="#C84F08"/>
+            <text class="node-label" x="390" y="291" text-anchor="middle">Access Point</text>
+          </svg>
+          <figcaption>Ilustrasi sederhana topologi jaringan.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Kompetensi -->
+    <section class="section section--grey" id="kompetensi">
+      <div class="wrap comp-layout">
+        <div class="section-head">
+          <h2>Kompetensi yang dipelajari</h2>
+          <p>Ringkasan bidang belajar di jurusan TKJ.</p>
+        </div>
+        <ul class="comp-list" data-render="competencies"></ul>
+      </div>
+    </section>
+
+    <!-- Fasilitas -->
+    <section class="section" id="fasilitas">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Fasilitas praktik</h2>
+          <p>Tempat siswa berlatih langsung.</p>
+        </div>
+        <div class="fac-grid" data-render="facilities"></div>
+      </div>
+    </section>
+
+    <!-- Kegiatan terbaru -->
+    <section class="section section--grey" id="kegiatan">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Kegiatan terbaru</h2>
+          <p>Berita dan pengumuman jurusan.</p>
+        </div>
+        <div class="news-grid" data-render="news"></div>
+        <p style="margin-top:2rem"><a class="btn btn--ghost" href="pages/berita.html">Lihat semua berita</a></p>
+      </div>
+    </section>
+
+    <!-- Galeri singkat -->
+    <section class="section" id="galeri">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Galeri kegiatan</h2>
+          <p>Foto kegiatan belajar dan praktik.</p>
+        </div>
+        <div class="gallery" data-render="gallery-home"></div>
+        <p style="margin-top:2rem"><a class="btn btn--ghost" href="pages/galeri.html">Buka galeri lengkap</a></p>
+      </div>
+    </section>
+
+    <!-- Ajakan -->
+    <section class="cta">
+      <div class="wrap">
+        <h2>Ada masukan atau masalah perangkat?</h2>
+        <p>Sampaikan saran untuk pengembangan jurusan, atau catat masalah jaringan, komputer, dan Wi-Fi di lingkungan sekolah.</p>
+        <div class="cta-actions">
+          <a class="btn btn--light" href="pages/saran.html">Kirim saran</a>
+          <a class="btn btn--outline-light" href="pages/laporan-it.html">Laporkan masalah IT</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="js/data.v41.js"></script>
+  <script src="js/api.v41.js"></script>
+  <script src="js/content.v41.js"></script>
+  <script src="js/components.v41.js"></script>
+  <script src="js/main.v41.js"></script>
+</body>
+</html>
