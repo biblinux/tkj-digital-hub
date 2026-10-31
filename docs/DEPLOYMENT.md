@@ -134,7 +134,7 @@ systemctl restart php8.4-fpm
 
 Di blok `server { ... }` Nginx tambahkan `client_max_body_size 5m;` lalu `nginx -t && systemctl reload nginx`.
 Tanpa pengaturan ini, foto di atas 1 MB ditolak server dengan galat 413 sebelum sampai ke aplikasi.
-Batas aplikasi: JPG, PNG, atau WebP, maksimal 2 MB dan 16 megapiksel. Foto disimpan di `storage/app/public/content`,
+Batas aplikasi: JPG, PNG, atau WebP, maksimal 5 MB dan 16 megapiksel. Foto disimpan di `storage/app/public/content`,
 sudah termasuk dalam cadangan di bagian 9.
 
 Catatan privasi: nama siswa pada "Pengurus organisasi siswa" akan tampil di situs publik. Isi hanya jika ada izin.

@@ -16,7 +16,7 @@
         @endif
         <form method="POST" action="{{ route('account.photo') }}" enctype="multipart/form-data">
             @csrf
-            <label for="photo">Pilih foto (JPG, PNG, atau WebP, maksimal 2 MB)</label>
+            <label for="photo">Pilih foto (JPG, PNG, atau WebP, maksimal 5 MB)</label>
             <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
             @error('photo')<p class="error">{{ $message }}</p>@enderror
             <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Unggah foto</button></div>

@@ -138,7 +138,7 @@ Semua endpoint di bawah ini memakai `Authorization: Bearer <token>` dan hanya me
 |---|---|---|
 | GET | `/api/v1/profile` | Data profil: `name`, `display_name`, `shown_name`, `username`, `email`, `role`, `photo_url` |
 | POST | `/api/v1/profile` | JSON `{display_name, email, current_password}`. `current_password` wajib hanya bila email berubah |
-| POST | `/api/v1/profile/photo` | `multipart/form-data` dengan kolom `photo` (JPG, PNG, atau WebP, maksimal 2 MB) |
+| POST | `/api/v1/profile/photo` | `multipart/form-data` dengan kolom `photo` (JPG, PNG, atau WebP, maksimal 5 MB) |
 | POST | `/api/v1/profile/photo/remove` | Menghapus foto profil |
 | GET | `/api/v1/projects` | Proyek milik akun yang masuk (semua status) |
 | POST | `/api/v1/projects` | Kirim proyek (multipart: title, description, technologies, result, link_url, image). Status awal `pending` kecuali `PROJECT_AUTO_PUBLISH=true` |
