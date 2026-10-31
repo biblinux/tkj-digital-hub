@@ -26,6 +26,7 @@
         $adminLinks[] = ['Dashboard', route('dashboard'), request()->routeIs('dashboard')];
         if ($can('manage_site_content')) {
             $adminLinks[] = ['Berita', route('admin.news.index'), request()->routeIs('admin.news.*')];
+            $adminLinks[] = ['Persetujuan', route('admin.submissions.index'), request()->routeIs('admin.submissions.*')];
             $adminLinks[] = ['Proyek Siswa', route('admin.projects.index'), request()->routeIs('admin.projects.*')];
             $adminLinks[] = ['Galeri', route('admin.gallery.index'), request()->routeIs('admin.gallery.*')];
             $adminLinks[] = ['Fasilitas', route('admin.facilities.index'), request()->routeIs('admin.facilities.*')];

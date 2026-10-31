@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\ProjectModerationController;
+use App\Http\Controllers\Admin\SubmissionModerationController;
 use App\Http\Controllers\Admin\OrgMemberController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -36,7 +37,7 @@ Route::get('/saran', [SuggestionController::class, 'create'])
     ->middleware('frontend')
     ->name('suggestions.create');
 Route::post('/saran', [SuggestionController::class, 'store'])
-    ->middleware('throttle:5,10')
+    ->middleware('throttle:5,10,w40')
     ->name('suggestions.store');
 
 /*
@@ -46,12 +47,12 @@ Route::post('/saran', [SuggestionController::class, 'store'])
 */
 Route::get('/activate/{token}', [AccountActivationController::class, 'show'])
     ->where('token', '[A-Za-z0-9]{64}')
-    ->middleware('throttle:10,1')
+    ->middleware('throttle:10,1,w50')
     ->name('activation.show');
 
 Route::post('/activate/{token}', [AccountActivationController::class, 'activate'])
     ->where('token', '[A-Za-z0-9]{64}')
-    ->middleware('throttle:5,1')
+    ->middleware('throttle:5,1,w55')
     ->name('activation.activate');
 
 /*
@@ -63,7 +64,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
     Route::post('/login', [AuthController::class, 'login'])
-        ->middleware('throttle:10,1')
+        ->middleware('throttle:10,1,w67')
         ->name('login.store');
 });
 
@@ -87,14 +88,14 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/laporan', [ItReportController::class, 'index'])->name('reports.index');
     Route::get('/laporan/buat', [ItReportController::class, 'create'])->name('reports.create');
     Route::post('/laporan', [ItReportController::class, 'store'])
-        ->middleware('throttle:10,60')
+        ->middleware('throttle:10,60,w91')
         ->name('reports.store');
     Route::get('/laporan/{report}', [ItReportController::class, 'show'])
         ->whereNumber('report')
         ->name('reports.show');
     Route::post('/laporan/{report}/keterangan', [ItReportController::class, 'comment'])
         ->whereNumber('report')
-        ->middleware('throttle:20,10')
+        ->middleware('throttle:20,10,w98')
         ->name('reports.comment');
 
     // Penanganan laporan (teknisi dan admin; dicek lagi di policy)
@@ -113,6 +114,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // Pengelolaan konten website (berita, galeri, fasilitas, struktur organisasi).
     Route::middleware('permission:manage_site_content')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('submissions', [SubmissionModerationController::class, 'index'])->name('submissions.index');
+        Route::post('submissions/{type}/{id}/review', [SubmissionModerationController::class, 'review'])
+            ->whereIn('type', ['news', 'gallery'])->whereNumber('id')->name('submissions.review');
         Route::get('projects', [ProjectModerationController::class, 'index'])->name('projects.index');
         Route::get('projects/{project}', [ProjectModerationController::class, 'show'])->whereNumber('project')->name('projects.show');
         Route::post('projects/{project}/review', [ProjectModerationController::class, 'review'])->whereNumber('project')->name('projects.review');
