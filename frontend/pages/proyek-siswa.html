@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyek Siswa | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Dokumentasi proyek TKJ: deskripsi, gambar, teknologi yang digunakan, dan hasil.">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="../css/style.css?v=41">
+</head>
+<body data-root="../" data-page="proyek">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <section class="page-head">
+      <div class="wrap">
+        <h1>Proyek Siswa</h1>
+        <p>Dokumentasi proyek TKJ: deskripsi, gambar, teknologi yang digunakan, dan hasil.</p>
+      </div>
+    </section>
+    <div class="page-body">
+      <div class="wrap">
+        <div class="project-grid" data-render="projects"></div>
+
+        <section class="form-card" id="project-submit" aria-labelledby="ps-title" style="margin-top:2.5rem">
+          <h2 id="ps-title">Kirim proyek</h2>
+          <div id="ps-login" hidden>
+            <p>Siswa dengan akun dapat mengirim proyeknya sendiri. Proyek tampil di halaman ini setelah ditinjau admin jurusan.</p>
+            <p><a class="btn btn--primary" href="masuk.html">Masuk untuk mengirim proyek</a></p>
+          </div>
+          <div id="ps-form" hidden>
+            <form id="form-project" novalidate>
+              <h3 id="ps-form-title">Kirim proyek Anda</h3>
+              <p class="hint">Proyek akan tampil setelah ditinjau admin. Jangan mencantumkan data pribadi.</p>
+              <div class="field"><label for="p-title">Judul proyek</label>
+                <input class="input" id="p-title" name="title" type="text" minlength="5" maxlength="120"></div>
+              <div class="field"><label for="p-desc">Deskripsi</label>
+                <textarea class="textarea" id="p-desc" name="description" rows="5" minlength="20" maxlength="2000"></textarea></div>
+              <div class="field"><label for="p-tech">Teknologi <span class="hint">(pisahkan dengan koma)</span></label>
+                <input class="input" id="p-tech" name="technologies" type="text" maxlength="200" placeholder="Contoh: MikroTik, VLAN, Linux"></div>
+              <div class="field"><label for="p-result">Hasil <span class="hint">(opsional)</span></label>
+                <input class="input" id="p-result" name="result" type="text" maxlength="300"></div>
+              <div class="field"><label for="p-link">Tautan <span class="hint">(opsional, diawali https://)</span></label>
+                <input class="input" id="p-link" name="link_url" type="url" maxlength="255"></div>
+              <div class="field"><label for="p-image">Foto <span class="hint">(opsional, JPG/PNG/WebP, maksimal 5 MB)</span></label>
+                <input id="p-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+                <label id="ps-image-note" class="hint" hidden><input type="checkbox" name="remove_image" value="1"> Hapus foto saat ini</label></div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary" id="ps-submit">Kirim proyek</button>
+                <button type="button" class="btn btn--ghost" id="ps-cancel" hidden>Batal</button>
+              </div>
+            </form>
+          </div>
+          <div class="callout" id="ps-status" role="status" hidden></div>
+          <div id="ps-mine" hidden>
+            <h3>Proyek saya</h3>
+            <div id="ps-list"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/data.v41.js"></script>
+  <script src="../js/api.v41.js"></script>
+  <script src="../js/components.v41.js"></script>
+  <script src="../js/content.v41.js"></script>
+  <script src="../js/main.v41.js"></script>
+  <script src="../js/pages.v41.js"></script>
+</body>
+</html>

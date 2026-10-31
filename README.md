@@ -66,6 +66,11 @@ MAIL_FROM_NAME="TKJ Digital Hub"
 Alamat `noreply@jarvar.web.id` baru boleh dipakai setelah domain diverifikasi di penyedia
 email (SPF, DKIM, DMARC). Jangan menaruh kredensial SMTP di kode atau di Git.
 
+## Frontend
+
+Situs statis `jarvar.web.id` ada di folder [`frontend/`](frontend/). Cara memasangnya di hosting cPanel
+dan mengganti alamat backend ada di [frontend/README.md](frontend/README.md).
+
 ## Deployment
 
 Lihat [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

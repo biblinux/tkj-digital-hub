@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Berita dan Informasi | TKJ Digital Hub SMKN 1 Leuwimunding</title>
+  <meta name="description" content="Artikel kegiatan, pengumuman, dan informasi terbaru jurusan.">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="../css/style.css?v=41">
+</head>
+<body data-root="../" data-page="berita">
+  <a class="skip" href="#konten">Lewati ke konten</a>
+  <div id="site-header"></div>
+
+  <main id="konten">
+    <section class="page-head">
+      <div class="wrap">
+        <h1>Berita dan Informasi</h1>
+        <p>Artikel kegiatan, pengumuman, dan informasi terbaru jurusan.</p>
+      </div>
+    </section>
+    <div class="page-body">
+      <div class="wrap">
+        <div>
+          <div class="pills" id="news-pills" role="group" aria-label="Filter kategori berita"></div>
+          <p class="result-count" id="news-count" aria-live="polite"></p>
+          <div class="news-page" id="news-list"></div>
+        </div>
+        <section class="form-card" id="submit-box" aria-labelledby="sb-title" style="margin-top:2.5rem">
+          <h2 id="sb-title">Kirim berita</h2>
+          <div id="sb-login" hidden>
+            <p>Pengguna dengan akun dapat mengirim berita. Kiriman tampil setelah ditinjau dan disetujui admin jurusan.</p>
+            <p><a class="btn btn--primary" href="masuk.html">Masuk untuk mengirim berita</a></p>
+          </div>
+          <div id="sb-form" hidden>
+            <form id="form-sub" novalidate>
+              <p class="hint">Kiriman tampil setelah disetujui admin. Jangan mencantumkan data pribadi.</p>
+              <div class="field"><label for="s-title">Judul berita</label>
+                <input class="input" id="s-title" name="title" type="text" minlength="5" maxlength="150"></div>
+              <div class="field"><label for="s-cat">Kategori</label>
+                <select class="select" id="s-cat" name="category"><option>Kegiatan</option><option>Pengumuman</option><option>Prestasi</option><option>Informasi</option></select></div>
+              <div class="field"><label for="s-sum">Ringkasan <span class="hint">(maksimal 300 karakter)</span></label>
+                <textarea class="textarea" id="s-sum" name="summary" rows="3" maxlength="300"></textarea></div>
+              <div class="field"><label for="s-body">Isi berita <span class="hint">(opsional)</span></label>
+                <textarea class="textarea" id="s-body" name="body" rows="6" maxlength="5000"></textarea></div>
+              <div class="field"><label for="s-img">Foto <span class="hint">(opsional, JPG/PNG/WebP, maksimal 5 MB)</span></label>
+                <input id="s-img" name="image" type="file" accept="image/jpeg,image/png,image/webp"></div>
+              <div class="form-actions"><button type="submit" class="btn btn--primary" id="sb-submit">Kirim berita</button></div>
+            </form>
+          </div>
+          <div class="callout" id="sb-status" role="status" hidden></div>
+          <div id="sb-mine" hidden>
+            <h3>Kiriman saya</h3>
+            <div id="sb-list"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/data.v41.js"></script>
+  <script src="../js/api.v41.js"></script>
+  <script src="../js/content.v41.js"></script>
+  <script src="../js/components.v41.js"></script>
+  <script src="../js/main.v41.js"></script>
+  <script src="../js/pages.v41.js"></script>
+</body>
+</html>
