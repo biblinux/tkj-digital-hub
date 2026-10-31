@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\AccountActivationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,9 @@ class AccountActivationController extends Controller
             ]);
         }
 
+        // Peran pemilik tautan dicatat sebelum aktivasi (tautan dipakai sekali).
+        $role = $this->activations->findValid($token)?->user?->role;
+
         $validated = $request->validate([
             'password' => [
                 'required',
@@ -62,8 +66,14 @@ class AccountActivationController extends Controller
 
         RateLimiter::clear($key);
 
+        // Siswa masuk lewat situs utama, bukan dashboard admin.
+        $frontend = rtrim((string) config('tkj.frontend_url'), '/');
+        if ($frontend !== '' && $role === User::ROLE_STUDENT) {
+            return redirect()->away($frontend.'/pages/masuk.html?aktif=1');
+        }
+
         return redirect()
             ->route('login')
-            ->with('success', 'Akun berhasil diaktifkan. Admin dan teknisi masuk di halaman ini; siswa masuk lewat tombol Masuk di situs utama jarvar.web.id.');
+            ->with('success', 'Akun berhasil diaktifkan. Silakan masuk.');
     }
 }

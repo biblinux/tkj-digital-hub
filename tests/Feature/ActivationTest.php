@@ -43,6 +43,24 @@ class ActivationTest extends TestCase
             ->assertSee('rina@example.com');
     }
 
+    public function test_student_is_sent_to_main_site_after_activation_when_frontend_set(): void
+    {
+        config(['tkj.frontend_url' => 'https://jarvar.web.id']);
+        [$user, $token] = $this->pendingUser();
+
+        $this->activate($token)->assertRedirect('https://jarvar.web.id/pages/masuk.html?aktif=1');
+        $this->assertTrue($user->refresh()->is_active);
+    }
+
+    public function test_technician_still_goes_to_dashboard_login_after_activation(): void
+    {
+        config(['tkj.frontend_url' => 'https://jarvar.web.id']);
+        $user = $this->makeUser(User::ROLE_TECHNICIAN, false, ['username' => 'tek', 'email' => 'tek@example.com']);
+        $token = app(AccountActivationService::class)->issue($user);
+
+        $this->activate($token)->assertRedirect(route('login'));
+    }
+
     public function test_valid_token_activates_account_and_hashes_password(): void
     {
         [$user, $token] = $this->pendingUser();
